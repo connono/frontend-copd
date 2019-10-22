@@ -21,7 +21,12 @@ export default {
     }
 
     if (title) {
-      vnodes.push(<span slot='title'>{(title)}</span>)
+      vnodes.push(
+	    <div style="display:inline-block">
+		  <span slot='title'>{(title)}</span>
+		  <div style="display:inline-block; width: 30px; height: 20px; border-radius: 50px; background-color: red; color: white;text-align: center;line-height: 20px; margin-left: 10px">20</div>
+		</div>
+	  )
     }
     return vnodes
   }
