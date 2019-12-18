@@ -87,6 +87,9 @@
 														<div slot="content">
 															<span>二级管理第</span>
 															<span>{{toWeeks(item.manage.manageLevelStartDateTime.replace(/-/g,'/'))}}</span>
+															<span>周（第</span>
+															
+															<span>{{toDays(item.manage.manageLevelStartDateTime.replace(/-/g,'/'), new Date())}}</span>
 															<span>天）</span>
 														</div>
 														<img :src="imgMLM4" v-if="toWeeks(item.manage.manageLevelStartDateTime.replace(/-/g,'/'))>3" />
@@ -150,7 +153,6 @@
 
 <script>
 	import Component from 'vue-class-component'
-	import axios from 'axios'
 	import BaseComponent from '../../components/BaseComponent'
     import ImgMLW1 from '../../images/data/mlw1.png'
     import ImgMLW2 from '../../images/data/mlw2.png'
