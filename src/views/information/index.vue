@@ -1,6 +1,8 @@
 <template>
   <div class="information-container">
-    <div class="information-text">This is information page.</div>
+    <div class="information-text">
+		<span>共405位患者。</span>
+	</div>
   </div>
 </template>
 
