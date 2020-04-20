@@ -44,43 +44,68 @@ export const constantRoutes = [
   },
   {
 	path: '/',
+	name: 'Manage',
+	meta: {title: '患者管理', icon: 'manage'},
 	component: Layout,
-	redirect: '/warning',
 	children: [{
 		path: 'warning',
 		name: 'Warning',
 		component: () => import('@/views/warning/index'),
-		meta: { title: '预警患者', icon: 'warning' }
-	}]
-  },
-  {
-	path: '/following',
-	component: Layout,
-	children: [{
-		path: '',
+		meta: { title: '预警列表', icon: 'warning' }
+	},{
+		path: 'following',
 		name: 'Following',
 		component: () => import('@/views/following/index'),
-		meta: { title: '随访患者', icon: 'following' }
+		meta: { title: '随访列表', icon: 'following' }
+	},{
+		path: 'create',
+		name: 'Create',
+		component: () => import('@/views/create/index'),
+		meta: { title: '患者注册', icon: 'create' }
 	}]
   },
   {
-	path: '/manage',
+	path: '/list',
+	name: 'List',
+	meta: {title: '患者列表', icon: 'list'},
 	component: Layout,
 	children: [{
-		path: '',
+		path: 'benyuan',
+		name: 'Benyuan',
+		component: () => import('@/views/information/index'),
+		meta: { title: '本院', icon: 'benyuan' }
+	},{
+		path: 'tayuan',
+		name: 'Tayuan',
+		component: () => import('@/views/information/index'),
+		meta: { title: '他院', icon: 'tayuan' }
+	}]
+  },
+  {
+	path: '/tansfer',
+	name: 'Tansfer',
+	meta: {title: '患者转诊', icon: 'tansfer'},
+	component: Layout,
+	children: [{
+		path: 'audit',
+		name: 'Audit',
+		component: () => import('@/views/correct/index'),
+		meta: { title: '转入审核', icon: 'audit' }
+	},{
+		path: 'manage',
 		name: 'Manage',
 		component: () => import('@/views/manage/index'),
-		meta: { title: '患者管理', icon: 'manage' }
-	}]
-  },
-  {
-	path: '/information',
-	component: Layout,
-	children: [{
-		path: '',
-		name: 'information',
-		component: () => import('@/views/information/index'),
-		meta: { title: '患者列表', icon: 'information' }
+		meta: { title: '转入管理', icon: 'manage' }
+	},{
+		path: 'trace',
+		name: 'Trace',
+		component: () => import('@/views/user/index'),
+		meta: { title: '转出追踪', icon: 'trace' }
+	},{
+		path: 'auto',
+		name: 'Auto',
+		component: () => import('@/views/auto/index'),
+		meta: { title: '自动审核设置', icon: 'auto' }
 	}]
   },
   // 404 page must be placed at the end !!!

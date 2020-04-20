@@ -6,6 +6,7 @@ import table from './table'
 import warningPatientList from './warningPatientList'
 import followingPatientList from './followingPatientList'
 import patientList from './patientList'
+import createPatient from './createPatient'
 
 const mocks = [
   ...user,
@@ -13,6 +14,7 @@ const mocks = [
   ...warningPatientList,
   ...followingPatientList,
   ...patientList,
+  ...createPatient
 ]
 
 // for front mock

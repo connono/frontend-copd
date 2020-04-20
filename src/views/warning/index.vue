@@ -222,7 +222,7 @@
 		this.warningTotal = 0;
 		this.patientTotal = 0;
 		getWarningPatientList().then(response=>{
-			console.log(response);
+			//console.log(response);
 			this.isSearching = false;
 			this.isError = false;
 			this.warningPatientList = response.data;
