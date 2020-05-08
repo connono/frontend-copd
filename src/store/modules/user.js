@@ -1,34 +1,44 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout } from '@/api/user'
+import { getToken, setToken, removeToken, getAuth, setAuth, removeAuth, getOrgCode, setOrgCode, removeOrgCode } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import { JsonToformData } from '@/utils/formData'
 
 const state = {
   token: getToken(),
-  name: '',
-  avatar: ''
+  auth: getAuth(),
+  orgCode: getOrgCode()
 }
 
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
   },
-  SET_NAME: (state, name) => {
-    state.name = name
+  SET_AUTH: (state, auth) => {
+    state.auth = auth
   },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
+  SET_ORGCODE: (state, orgCode) => {
+    state.orgCode = orgCode
   }
 }
 
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const jsonData = {
+		userName: userInfo.userName.trim(),
+		password: userInfo.password
+	}
+	
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+      login(JsonToformData(jsonData)).then(response => {
+        const { data } = response;
+		//console.log(data);
+        commit('SET_TOKEN', data.userID)
+        setToken(data.userID);
+		commit('SET_AUTH', data.auth);
+		setAuth(data.auth);
+		commit('SET_ORGCODE', data.orgCode);
+		setOrgCode(data.orgCode);
         resolve()
       }).catch(error => {
         reject(error)
@@ -37,7 +47,7 @@ const actions = {
   },
 
   // get user info
-  getInfo({ commit, state }) {
+  /*getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { data } = response
@@ -55,20 +65,22 @@ const actions = {
         reject(error)
       })
     })
-  },
+  },*/
 
   // user logout
   logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+    //return new Promise((resolve, reject) => {
+    // logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         removeToken()
+		removeAuth()
+		removeOrgCode()
         resetRouter()
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+    //    resolve()
+    //  }).catch(error => {
+    //    reject(error)
+    //  })
+    //})
   },
 
   // remove token

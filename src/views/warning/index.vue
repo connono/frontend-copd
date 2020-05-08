@@ -1,29 +1,29 @@
 <template>
   <div class="warning-container">
     <div class="info">
-		<span>共&nbsp;{{this.patientTotal}}&nbsp;</span>位预警患者，&nbsp;{{this.warningTotal}}&nbsp;条预警信息</span>
+		<span>共&nbsp;{{this.patientTotal}}&nbsp;</span>位预警患者</span>
 		<span>&nbsp;</span>
 		<el-button type="primary" :loading="isLoading" @click="load()">{{LoadingText}}</el-button>
 	</div>
 	<div class="body" v-loading="isSearching">
-		<div v-if="warningPatientList.length === 0">
+		<!--<div v-if="warningPatientList.length === 0">
 			<span v-if="isError" class="error">
 			  <i class="el-icon-error"></i>
 			  <div style="color:red">{{errSummary}}</div>
 			  <div style="color:red">{{errDetail}}</div>
 			</span>
-			<span v-else>暂无内容显示</span>
-		</div>
-		<div v-else>
+			<span v-else>无内容显示</span>
+		</div>-->
+		<div>
 			<div class="card" v-for="item,index in warningPatientList" :id="item.patientID">
 			    <el-card>
 				    <div slot="header" class="clearfix">
 						<svg-icon v-show="item.sex==1" icon-class="man" style="font-size:30px;color:blue"></svg-icon>
 						<svg-icon v-show="item.sex==2" icon-class="woman" style="font-size:30px;color:deeppink"></svg-icon>
 						<span class="nameSexAge">{{item.patientName}}</span>
-						<span class="nameSexAge">{{item.sexText}}</span>
-						<span class="nameSexAge">{{item.age}}岁</span>
-						<span>{{item.tag}}</span>
+						<span class="nameSexAge">{{item.sex==1?'男':'女'}}</span>
+						<span class="nameSexAge">{{dateToAge(item.dateOfBirth)}}岁</span>
+						<span></span>
 					</div>
 					<div class="WarningInfoContainer">
 						<div class="left">
@@ -31,8 +31,8 @@
 							预警信息：
 						</div>
 						<div class="right">
-							<div v-if="item.alertItems.length>0">
-								<div class="alertItem" v-for="alertItem in item.alertItems">
+							<div v-if="item.alertItemList.length>0">
+								<div class="alertItem" v-for="alertItem in item.alertItemList">
 									<span class="el-icon-warning warningIcon"/>
 									<span class="alertNameReason">{{alertItem.alertName}}</span>
 									<span class="alertNameReason">{{alertItem.alertReason}}</span>
@@ -47,8 +47,8 @@
 							用药情况：
 						</div>
 						<div class="right">
-							<div v-if="item.medication.length>0">
-								<div class="drugItem" v-for="drug in item.medication">
+							<div v-if="item.drugRecordList!=null">
+								<div class="drugItem" v-for="drug in item.drugRecordList">
 									<span class="lbl">{{drug.drugName}}</span>
 									<span class="content">{{drug.dosage}}</span>
 									<span v-if="drug.freq" class="content">{{drug.freq}}</span>
@@ -73,30 +73,30 @@
 							管理情况：
 						</div>
 						<div class="right">
-							<div v-if="item.manage!=null" class="row">
-								<div v-if="item.manage.manageStatus==0">
+							<div class="row">
+								<div v-if="item.manageItem.manageStatus==0">
 									<div style="display: flex; align-items: center;">
-										<div v-if="item.manage.manageClass.includes('高血压')">
+										<div v-if="item.manageItem.manageClass===0">
 											<div>
 												<span class="row">高血压管理等级：</span>
-												<span v-if="item.manage.manageLevel==0">新患者</span>
-												<span v-else-if="item.manage.manageLevel==1">一级</span>
-												<div v-else-if="item.manage.manageLevel==2" style="display: inline-block; align-items: center;">
+												<span v-if="item.manageItem.manageLevel==0">新患者</span>
+												<span v-else-if="item.manageItem.manageLevel==1">一级</span>
+												<div v-else-if="item.manageItem.manageLevel==2" style="display: inline-block; align-items: center;">
 													<span>二级&nbsp;</span>
-													<el-tooltip effect="light">
+													<!--<el-tooltip effect="light">
 														<div slot="content">
 															<span>二级管理第</span>
-															<span>{{toWeeks(item.manage.manageLevelStartDateTime.replace(/-/g,'/'))}}</span>
+															<span>{{toWeeks(item.manageItem.manageStartDateTime.replace(/-/g,'/'))}}</span>
 															<span>周（第</span>
 															
-															<span>{{toDays(item.manage.manageLevelStartDateTime.replace(/-/g,'/'), new Date())}}</span>
+															<span>{{toDays(item.manageItem.manageStartDateTime.replace(/-/g,'/'), new Date())}}</span>
 															<span>天）</span>
 														</div>
-														<img :src="imgMLM4" v-if="toWeeks(item.manage.manageLevelStartDateTime.replace(/-/g,'/'))>3" />
-														<img :src="imgMLM3" v-else-if="toWeeks(item.manage.manageLevelStartDateTime.replace(/-/g,'/'))>2" />
-														<img :src="imgMLM2" v-else-if="toWeeks(item.manage.manageLevelStartDateTime.replace(/-/g,'/'))>1" />
+														<img :src="imgMLM4" v-if="toWeeks(item.manageItem.manageStartDateTime.replace(/-/g,'/'))>3" />
+														<img :src="imgMLM3" v-else-if="toWeeks(item.manageItem.manageStartDateTime.replace(/-/g,'/'))>2" />
+														<img :src="imgMLM2" v-else-if="toWeeks(item.manageItem.manageStartDateTime.replace(/-/g,'/'))>1" />
 														<img :src="imgMLW1" v-else/>
-													</el-tooltip>
+													</el-tooltip>-->
 												</div>
 											</div>
 										</div>
@@ -106,17 +106,16 @@
 									<span>终止管理</span>
 								</div>
 							</div>
-							<div v-else class="row">暂无管理情况</div>
 							<div class="row">
 								<span class="row">依从度</span>
 								<span class="row">
-									<star :on="item.manage.complianceRate" :off="5-item.manage.complianceRate" ></star>
+									<star :on="item.manageItem.complianceRate" :off="5-item.manageItem.complianceRate" ></star>
 								</span>
 							</div>
 							<div style="padding-top: 10px;">
-								<span>{{"已管理"+item.manage.manageDays+"天，共随访"+item.manage.followupTimes+"次"}}</span>
-								<span v-if="item.manage.lastFollowupDate!=null">{{"，上次随访："+toDateText(item.manage.lastFollowupDate.replace(/-/g,"/"))+getDaysText(item.manage.lastFollowupDays)}}</span>
-								<span v-if="item.manage.followupDate!=null">{{"，计划随访："+toDateText(item.manage.followupDate.replace(/-/g,"/"))+getDaysText(item.manage.followupDays)}}</span>
+								<span>{{"已管理"+item.manageItem.manageDays+"天，共随访"+item.manageItem.followupTimes+"次"}}</span>
+								<span v-if="item.manageItem.lastFollowupDate!=null">{{"，上次随访："+toDateText(item.manageItem.lastFollowupDate.replace(/-/g,"/"))+getDaysText(item.manageItem.lastFollowupDays)}}</span>
+								<span v-if="item.manageItem.followupDate!=null">{{"，计划随访："+toDateText(item.manageItem.followupDate.replace(/-/g,"/"))+getDaysText(item.manageItem.followupDays)}}</span>
 							</div>
 							<div class="btn">
 								<el-button size="medium" type="primary" @click="showPatientDlg(item.patientID)">立即干预</el-button>
@@ -127,13 +126,17 @@
 									v-model="item.visible"
 									:popper-class="'p'+item.patientID"
 									@hide="ignoreReason='重复预警'">
+									<p>忽略预警</p>
+									<el-select v-model="ignoreSerialNo" style="width: 190px" size="mini" placeholder="请选择">
+										<el-option :label="alertItem.alertName" :value="alertItem.serialNo" v-for="alertItem in item.alertItemList" :key="alertItem.serialNo" />
+									</el-select>
 									<p>忽略预警的原因：</p>
 									<el-select v-model="ignoreReason" style="width: 190px" size="mini">
 										<el-option label="重复预警" value="重复预警"></el-option>
 										<el-option label="最近已随访" value="最近已随访"></el-option>
 									</el-select>
 									<div style="text-align: center; margin-top: 15px">
-										<el-button class="btn-ignore" size="mini" @click="closeCard(item.patientID)">忽略预警</el-button>
+										<el-button class="btn-ignore" size="mini" @click="closeCard()">忽略预警</el-button>
 										<el-button class="btn-ignore" size="mini" @click="doClose(item,index)">取消</el-button>
 									</div>
 									<el-button style="margin-left: 12px" size="medium" slot="reference">忽略预警</el-button>
@@ -159,7 +162,7 @@
     import ImgMLW3 from '../../images/data/mlw3.png'
     import ImgMLW4 from '../../images/data/mlw4.png'
 	import Star from '../../components/graphic/Star'
-	import {getWarningPatientList,deleteWarningPatient} from '../../api/warningPatientList'
+	import {getWarningPatientCount,getWarningPatientList,deleteWarningPatient} from '../../api/warningPatientList'
 	@Component({
 		components: {
 			star: Star
@@ -167,7 +170,6 @@
 	})
 	export default class Warning extends BaseComponent {
 	  patientTotal = 0
-	  warningTotal = 0
 	  patientID = 0
 	  isSearching = false
 	  isError = false
@@ -181,6 +183,7 @@
 	  imgMLM2= ImgMLW2
 	  imgMLM3= ImgMLW3
 	  imgMLM4= ImgMLW4
+	  ignoreSerialNo = null;
 	  
 	  toWeeks(date) {
         let now = new Date();
@@ -199,15 +202,18 @@
         return weeks;
       }
 	  doClose(item, index) {
+		this.ignoreSerialNo=null
 		item.visible = false;
 		this.$set(this.warningPatientList, index, item);
 	  }
-	  closeCard(patientID){
-	    deleteWarningPatient({patientID: patientID})
+	  closeCard(){
+		if(this.ignoreSerialNo===null) return;
+	    deleteWarningPatient({executeDoctorID: this.$store.state.user.token, ignoreReason: this.ignoreReason, serialNo: this.ignoreSerialNo})
 		.then((response)=>{
 		  console.log(response);
 		  this.success('操作成功')
 		}).catch((error)=>{
+		  console.log({executeDoctorID: this.$store.state.user.token, ignoreReason: this.ignoreReason, serialNo: this.ignoreSerialNo})
 		  this.error('操作失败')
 		});
 		this.doList();
@@ -216,29 +222,38 @@
 	    this.alert('即将跳转'+patientID+'所在的页面')
 	  }
 	  
+	  dateToAge(str){
+	    var date = new Date(str);
+		var now = new Date();
+		return now.getYear()-date.getYear()+1;
+	  }
+	  
 	  doList(){
 		this.isError = false;
 		this.isSearching = true;
-		this.warningTotal = 0;
-		this.patientTotal = 0;
-		getWarningPatientList().then(response=>{
-			//console.log(response);
-			this.isSearching = false;
-			this.isError = false;
-			this.warningPatientList = response.data;
-			this.getTotal(response.data);
+		//console.log(this.$store.state)
+		getWarningPatientCount({viewerID: this.$store.state.user.token}).then(response=>{
+			var patientTotal = response.data;
+			getWarningPatientList({pageIndex: 1, pageOffset: Math.min(10, patientTotal), viewerID: this.$store.state.user.token}).then(response=>{
+				//console.log(response);
+				this.warningPatientList = response.data.content;
+				this.patientTotal = patientTotal;
+				this.isSearching = false;
+				this.isError = false;
+				console.log(this.warningPatientList);
+			}).catch(error=>{
+				this.isError = true;
+				this.isSearching = false;
+			})
 		}).catch(error=>{
 			this.isError = true;
+			this.isSearching = false;
 		})
-		this.isSearching = false;
+		
+		
+		
 	  }
 	
-		getTotal(data){
-			this.patientTotal = data.length;
-			for(let i = 0; i < data.length; i++){
-				this.warningTotal += data[i].alertItems.length;
-			}
-		}
 		
 		load(){
 			this.isLoading=true;
@@ -248,7 +263,7 @@
 			this.LoadingText="刷新";
 		}
 		
-		mounted(){
+		created(){
 		  this.$emit("activeChanged",0)
 		  this.doList();
 		}

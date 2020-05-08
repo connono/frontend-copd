@@ -1,16 +1,31 @@
 import request from '@/utils/request'
+import { JsonToformData } from '@/utils/formData'
 
-export function getWarningPatientList() {
+export function getWarningPatientCount(data){
+	return request({
+		url: 'http://localhost:18908/manage/alert/count/this',
+		method: 'get',
+		params: data
+	})
+	
+}
+
+export function getWarningPatientList(data) {
   return request({
-    url: '/warningPatientList',
+    url: 'http://localhost:18908/manage/alert/page/this',
     method: 'get',
+	params: data
   })
 }
 
 export function deleteWarningPatient(data){
+  //var data = JsonToformData(data)
   return request({
-	url: '/warningPatientList/delete',
+	url: 'http://localhost:18908/manage/alert/ignore',
 	method: 'post',
-	data
+	//headers: {
+	//  'Content-Type': "application/x-www-form-urlencoded;charset=utf-8"
+    //},
+	params: data
   })
 }
