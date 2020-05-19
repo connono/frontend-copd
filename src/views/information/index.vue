@@ -117,7 +117,8 @@
 		}
 		
 		handleClick(row){
-			console.log(row);
+			//console.log(row);
+			this.$router.push("/patientInfo/"+row.patientID)
 		}
 		
 		dateToAge(str){

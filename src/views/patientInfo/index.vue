@@ -17,7 +17,7 @@
 						</el-col>
 						<el-col :span="5">
 							<el-form-item label="出生日期">
-								<el-input v-model="information_form.date" readonly></el-input>
+								<el-input v-model="information_form.dateOfBirth" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="5">
@@ -54,27 +54,27 @@
 						</el-col>
 						<el-col :span="4">
 							<el-form-item label="管理状态">
-								<el-input v-model="information_form.manage" readonly></el-input>
+								<el-input v-model="information_form.manageStatus" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="4">
 							<el-form-item label="负责医生">
-								<el-input v-model="information_form.doctor" readonly></el-input>
+								<el-input v-model="information_form.doctorID" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label="所属机构">
-								<el-input v-model="information_form.ass_institution" readonly></el-input>
+								<el-input v-model="information_form.hospitalID" readonly></el-input>
 							</el-form-item>
 						</el-col>
-						<el-col :span="4">
+						<!--<el-col :span="4">
 							<el-form-item label="管理历史">
 								<el-input v-model="information_form.history" readonly></el-input>
 							</el-form-item>
-						</el-col>
+						</el-col>-->
 						<el-col :span="4">
 							<el-form-item label="依从度">
-								<el-input v-model="information_form.adherence" readonly></el-input>
+								<el-input v-model="information_form.complianceRate" readonly></el-input>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -154,19 +154,30 @@
 					</div>
 				</div>
 			</el-tab-pane>
-			<el-tab-pane label="监测数据" name="third">监测数据</el-tab-pane>
+			<el-tab-pane label="监测数据" name="third">
+				<div id="CAT" :style="{width: '100%', height: '300px'}"></div>
+				<div id="HAD_Anxiety" :style="{width: '100%', height: '300px'}"></div>
+				<div id="HAD_Depression" :style="{width: '100%', height: '300px'}"></div>
+				<div id="PEF" :style="{width: '100%', height: '300px'}"></div>
+				<div id="WEI" :style="{width: '100%', height: '300px'}"></div>
+				<div id="SMW" :style="{width: '100%', height: '300px'}"></div>
+			</el-tab-pane>
 			<el-tab-pane label="预警历史" name="fourth">
 				<el-table
 					:data="warning_tableData"
 					stripe
 					style="width: 100%">
 					<el-table-column
-						prop="date"
-						label="预警日期"
+						label="预警时间"
 						width="180">
+						<template slot-scope="scope">
+							<div style="display: inline-block">
+								{{transform(scope.row.alertTime)}}
+							</div>
+						</template>
 					</el-table-column>
 					<el-table-column
-						prop="reason"
+						prop="alertReason"
 						label="预警原因"
 						width="180">
 					</el-table-column>
@@ -180,12 +191,21 @@
 						label="处理结果"
 						width="180">
 					</el-table-column>
-					<el-table-column
+					<!--<el-table-column
 						prop="action"
 						label="操作"
 						width="180">
-					</el-table-column>
+					</el-table-column>-->
 				</el-table>
+				<el-pagination
+					@size-change="handleSizeChangeWarning"
+					@current-change="handleCurrentChangeWarning"
+					:current-page="currentPageWarning"
+					:page-sizes="[15,30,45,60]"
+					:page-size="pageSizeWarning"
+					layout="total, sizes, prev, pager, next, jumper"
+					:total="WarningCount">
+				</el-pagination>
 			</el-tab-pane>
 			<el-tab-pane label="随访记录" name="fifth">
 				<el-table
@@ -193,12 +213,16 @@
 					stripe
 					style="width: 100%">
 					<el-table-column
-						prop="date"
 						label="随访时间"
 						width="180">
+						<template slot-scope="scope">
+							<div style="display: inline-block">
+								{{transform(scope.row.planDate)}}
+							</div>
+						</template>
 					</el-table-column>
 					<el-table-column
-						prop="type"
+						prop="followingType"
 						label="类型"
 						width="180">
 					</el-table-column>
@@ -213,16 +237,25 @@
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="record"
+						prop="summary"
 						label="记录摘要"
 						width="180">
 					</el-table-column>
-					<el-table-column
+					<!--<el-table-column
 						prop="action"
 						label="操作"
 						width="180">
-					</el-table-column>
+					</el-table-column>-->
 				</el-table>
+				<el-pagination
+					@size-change="handleSizeChangeFollowing"
+					@current-change="handleCurrentChangeFollowing"
+					:current-page="currentPageFollowing"
+					:page-sizes="[15,30,45,60]"
+					:page-size="pageSizeFollowing"
+					layout="total, sizes, prev, pager, next, jumper"
+					:total="followingCount">
+				</el-pagination>
 			</el-tab-pane>
 			<el-tab-pane label="评估记录" name="sixth">评估记录</el-tab-pane>
 			<el-tab-pane label="转诊历史" name="seventh">
@@ -273,33 +306,205 @@
 <script>
 	import Component from 'vue-class-component'
 	import BaseComponent from '../../components/BaseComponent'
+	import {getPatientBaseInfo,getPatientManageInfo,getPatientReferralInfo,getPatientWarningInfo,getPatientFollowingInfo,getPatientData} from '../../api/patientInfo'
+	import moment from 'moment';
 	@Component
 	export default class Warning extends BaseComponent {
 		activeName= 'first';
-		information_form={
-		   name:"我换个",
-		   sex:"男",
-		   date:'2018-8-8',
-		   profession:'收缩',
-		   education:'收缩',
-		   phone:'13888888888',
-		   height:188,
-		   weight:88,
-		   diagnose: 'COPD',
-		   manage: '上转',
-		   doctor: '张三',
-		   ass_institution: '西湖区人民医院',
-		   history: '',
-		   adherence: '',
-		   tr_hospital: '邵逸夫医院',
-		   tr_doctor: '李四',
-		   tr_target: '住院',
-		   tr_reason: '监测数据严重不佳'
-		}
+		information_form={}
+		
 		warning_tableData=[];
+		currentPageWarning=1;
+		pageSizeWarning=15;
+		WarningCount=0;
+		
 		following_tableData=[];
+		currentPageFollowing=1;
+		pageSizeFollowing=15;
+		followingCount=0;
+		
+		patientData = {
+		  CAT: [],
+		  HAD_Anxiety: [],
+		  HAD_Depression: [],
+		  PEF: [],
+		  WEI: [],
+		  SMW: []
+		}
+		
 		handleClick(tab, event){
-			console.log(tab, event);
+			//console.log(tab.label);
+			if(tab.label === '基本信息') this.getInformation();
+			if(tab.label === '预警历史') this.getWarning();
+			if(tab.label === '随访记录') this.getFollowing();
+			if(tab.label === '转诊历史') this.getReferral();
+			if(tab.label === '监测数据') this.getData();
+		}
+		
+		getReferral(){}
+		
+		
+		
+		transform(date){
+			return moment(date).format('YYYY-MM-DD');
+		}
+		
+		handleSizeChangeFollowing(val){
+			console.log(val)
+			this.pageSizeFollowing=val;
+			this.getFollowing();
+		}
+		
+		handleCurrentChangeFollowing(val){
+			this.currentPageFollowing=val;
+			this.getFollowing();
+		}
+		
+		getFollowing(){
+			getPatientFollowingInfo({patientID: this.$route.params.patientID, pageIndex: this.currentPageWarning, pageOffset: this.pageSizeWarning})
+			  .then(response=>{
+			    console.log(response)
+				this.following_tableData = response.data.content;
+				this.followingCount = response.data.totalElements;
+			  })
+			  .catch(err=>{
+				console.log(err);
+			  })
+		}
+		
+		handleSizeChangeWarning(val){
+			this.pageSizeWarning=val;
+			this.getWarning();
+		}
+		
+		handleCurrentChangeWarning(val){
+			this.currentPageWarning=val;
+			this.getWarning();
+		}
+		
+		getWarning(){
+			getPatientWarningInfo({patientID: this.$route.params.patientID, pageIndex: this.currentPageWarning, pageOffset: this.pageSizeWarning})
+			  .then(response=>{
+				this.warning_tableData = response.data.content;
+				this.warningCount = response.data.totalElements;
+			  })
+			  .catch(err=>{
+				console.log(err);
+			  })
+		}
+		
+		P_getInfo = function(func,data){
+			return new Promise((resolve, reject)=>{
+				func(data)
+				  .then(response=>{
+					resolve(response.data);
+			      })
+			      .catch(err=>{
+					reject(err);
+			      })
+			    })
+		}
+		
+		getInformation(){
+			var P_getPatientBaseInfo = this.P_getInfo(getPatientBaseInfo,{patientID: this.$route.params.patientID});
+			var P_getPatientManageInfo = this.P_getInfo(getPatientManageInfo,{patientID: this.$route.params.patientID});
+			var P_getPatientReferralInfo = this.P_getInfo(getPatientReferralInfo,{patientID: this.$route.params.patientID});
+			Promise.all([P_getPatientBaseInfo,P_getPatientManageInfo,P_getPatientReferralInfo])
+			  .then(result=>{
+			    var new_information = {};
+				result.map(obj=>{
+					new_information = {...new_information, ...obj}
+				})
+				this.information_form = new_information;
+				//console.log(new_information);
+				return new_information;
+			  })
+			  .catch(err=>{
+			    console.log(err)
+			  })
+		}
+		
+		getData(){
+			var P_getPatientData = [];
+			for(var i=1; i<=8; i++){
+				var now = new Date();
+				var endDate = now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate();
+				var startDate = (now.getFullYear()-1)+'/'+(now.getMonth()+1)+'/'+now.getDate();
+				P_getPatientData.push(this.P_getInfo(getPatientData,{patientID: this.$route.params.patientID, startDate: startDate, endDate: endDate, type: i}));
+			}
+			Promise.all(P_getPatientData)
+			  .then(result=>{
+				console.log(result);
+			    this.patientData.CAT = result[0];
+			    this.patientData.HAD_Anxiety = result[1].map((item)=>{item.value=item.anxiety;return item;});
+			    this.patientData.HAD_Depression = result[1].map((item)=>{item.value=item.depression;return item;});
+			    this.patientData.PEF = result[2];
+			    this.patientData.WEI = result[6];
+			    this.patientData.SMW = result[7];
+				Object.keys(this.patientData).forEach(key=>{
+					let eCharts = this.$echarts.init(document.getElementById(key))
+					eCharts.setOption({
+						title: {
+						  left: 'center',
+						  text: key
+						},
+						tooltip: {
+						  trigger: 'axis',
+						  position: function (pt){
+						    return [pt[0], '10%'];
+						  }
+						},
+						toolbox: {
+						  feature: {
+						    dataZoom: {
+							  yAxisIndex: 'none'
+							},
+							restore: {},
+							saveAsImage: {}
+						  }
+						},
+						xAxis: {
+						  type: 'category',
+						  boundaryGap: false,
+						  data: this.patientData[key].map(item=>{return moment(item.recordTime).format('YYYY-MM-DD')})
+						},
+						yAxis: {
+						  type: 'value',
+						  boundaryGap: [0, '100%']
+						},
+						dataZoom: [{
+						  type: 'inside',
+						  start: 0,
+						  end: 10
+						}, {
+						  start: 0,
+						  end: 10,
+						  handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+						  handleSize: '80%',
+						  handleStyle: {
+						  color: '#fff',
+						  shadowBlur: 3,
+						  shadowColor: 'rgba(0, 0, 0, 0.6)',
+						  shadowOffsetX: 2,
+						  shadowOffsetY: 2
+						}
+						}],
+						series: [{
+						  data: this.patientData[key].map(item=>{return item.value}),
+						  type: 'line'
+						}]
+					})
+				})
+			  })
+			  .catch(err=>{
+			    console.log(err);
+			  })
+		}
+		
+		mounted(){
+			
+			//console.log(this.$route.params.patientID);
+			this.getInformation()
 		}
 	}
 </script>
@@ -339,5 +544,9 @@
 .no-dot-container{
   margin-top: -3px;
   margin-left: -40px;
+}
+.el-pagination{
+  float: right;
+  margin-top: 10px;
 }
 </style>

@@ -62,6 +62,12 @@ export const constantRoutes = [
 		name: 'Create',
 		component: () => import('@/views/create/index'),
 		meta: { title: '患者注册', icon: 'create' }
+	},{
+		path: 'patientInfo/:patientID',
+		name: 'PatientInfo',
+		component: () => import('@/views/patientInfo/index'),
+		meta: { title: '患者信息', icon: 'info' },
+		hidden: true
 	}]
   },
   {
@@ -99,7 +105,7 @@ export const constantRoutes = [
 	},{
 		path: 'trace',
 		name: 'Trace',
-		component: () => import('@/views/user/index'),
+		component: () => import('@/views/manage/index'),
 		meta: { title: '转出追踪', icon: 'trace' }
 	},{
 		path: 'auto',

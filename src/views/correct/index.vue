@@ -83,7 +83,42 @@
 		label="操作"
 		width="150">
 		<template slot-scope="scope">
-		  <el-button @click="handleClick(scope.row)" type="text" size="medium">查看</el-button>
+		  <el-button @click="handleClick(scope.row, 'look')" type="text" size="medium">查看</el-button>
+		  <el-popover
+			placement="bottom-start"
+			width="200"
+			trigger="click"
+			>
+			<div>
+				<p>请选择转诊医生：</p>
+				<div style="display: flex">
+					<el-select v-model="selectedDoctor" placeholder="请选择">
+					<el-option
+					  v-for="doctor in doctorList"
+					  :key="doctor.userID"
+					  :label="doctor.name"
+					  :value="doctor.userID">
+					</el-option>
+					</el-select>
+					<el-button @click="handleClick(scope.row, 'check')" size="medium">确认</el-button>
+				</div>
+			</div>
+			<el-button type="text" size="medium" slot="reference">确认</el-button>
+		  </el-popover>
+		  <el-popover
+			placement="bottom-start"
+			width="200"
+			trigger="click"
+			>
+			<div>
+				<p>拒绝原因：</p>
+				<div style="display: flex">
+					<el-input type="textarea" autosize v-model="refuseReason" placeholder="请输入内容"></el-input>
+					<el-button @click="handleClick(scope.row, 'refuse')" size="medium">确认</el-button>
+				</div>
+			</div>
+			<el-button type="text" size="medium" slot="reference">拒绝</el-button>
+		  </el-popover>
 		</template>
 	  </el-table-column>
 	</el-table>
@@ -103,7 +138,8 @@
 	import Component from 'vue-class-component'
 	import BaseComponent from '../../components/BaseComponent'
 	import Star from '../../components/graphic/Star'
-	import {getCorrectPatientList} from '../../api/correctPatient'
+	import {getCorrectPatientList,approve,refuse} from '../../api/correctPatient'
+	import {getDoctorInfo} from '../../api/doctorInfo'
 	
 	@Component({
 		components:{
@@ -115,9 +151,48 @@
 		currentPage = 1;
 		pageSize = 15;
 		totalPatient = 0;
+		doctorList=[];
+		selectedDoctor='';
+		refuseReason='';
 		
-		handleClick(row){
+		handleClick(row, type){
 			console.log(row);
+			if(type==='look'){
+				this.$router.push("/patientInfo/"+row.patientID)
+			}
+			if(type==='check'&&this.selectedDoctor!=''){
+				approve({doctorID: this.selectedDoctor, reviewerID: this.$store.state.user.token, serialNo: row.serialNo}).then(response=>{
+					if(response.message=='success')
+						this.success('成功转入!')
+					this.doList();
+				}).catch(err=>{
+					console.log(err);
+				})
+			}
+			if(type==='refuse'){
+				refuse({doctorID: this.selectedDoctor, reviewerID: this.$store.state.user.token,refuseReason:this.refuseReason, serialNo: row.serialNo})
+				  .then(response=>{
+				    if(response.message=='success')
+						this.success('成功拒绝!')
+					this.doList();
+				  })
+				  .catch(err=>{
+				    console.log(err);
+				  })
+			}
+		}
+		
+		getDoctorList(){
+			getDoctorInfo({hospitalID: this.$store.state.user.token})
+			  .then(response=>{
+				//console.log(response);
+				this.doctorList = response.data;
+				//console.log(this.doctorList);
+				
+			  })
+			  .catch(err=>{
+			    console.log(err);
+			  })
 		}
 		
 		handleSizeChange(val){
@@ -150,6 +225,7 @@
 		
 		mounted(){
 			this.$emit("activeChanged",0)
+			this.getDoctorList()
 			this.doList();
 		}
 	}

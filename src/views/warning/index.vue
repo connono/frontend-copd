@@ -122,7 +122,7 @@
 								<el-popover
 									trigger="click"
 									width="210"
-									placement="botoom-start"
+									placement="bottom-start"
 									v-model="item.visible"
 									:popper-class="'p'+item.patientID"
 									@hide="ignoreReason='重复预警'">
@@ -136,7 +136,7 @@
 										<el-option label="最近已随访" value="最近已随访"></el-option>
 									</el-select>
 									<div style="text-align: center; margin-top: 15px">
-										<el-button class="btn-ignore" size="mini" @click="closeCard()">忽略预警</el-button>
+										<el-button class="btn-ignore" size="mini" @click="closeCard(item,index)">忽略预警</el-button>
 										<el-button class="btn-ignore" size="mini" @click="doClose(item,index)">取消</el-button>
 									</div>
 									<el-button style="margin-left: 12px" size="medium" slot="reference">忽略预警</el-button>
@@ -206,17 +206,21 @@
 		item.visible = false;
 		this.$set(this.warningPatientList, index, item);
 	  }
-	  closeCard(){
+	  closeCard(item, index){
 		if(this.ignoreSerialNo===null) return;
 	    deleteWarningPatient({executeDoctorID: this.$store.state.user.token, ignoreReason: this.ignoreReason, serialNo: this.ignoreSerialNo})
 		.then((response)=>{
-		  console.log(response);
+		  //console.log(response);
 		  this.success('操作成功')
+		  this.doClose(item,index);
+		  this.doList();
 		}).catch((error)=>{
-		  console.log({executeDoctorID: this.$store.state.user.token, ignoreReason: this.ignoreReason, serialNo: this.ignoreSerialNo})
+		  console.log(error)
 		  this.error('操作失败')
+		  this.doClose(item,index);
+		  this.doList();
 		});
-		this.doList();
+		
 	  }
 	  showPatientDlg(patientID){
 	    this.alert('即将跳转'+patientID+'所在的页面')

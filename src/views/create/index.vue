@@ -130,8 +130,29 @@
 		label="操作"
 		width="150">
 		<template slot-scope="scope">
-		  <el-button @click="handleClick(scope.row)" type="text" size="medium">接收</el-button>
-		  <el-button @click="handleClick(scope.row)" type="text" size="medium">忽略</el-button>
+		  <el-popover
+			placement="bottom-start"
+			width="200"
+			trigger="click"
+			>
+			<div>
+				<p>请选择接收医生：</p>
+				<div style="display: flex">
+					<el-select v-model="selectedDoctor" placeholder="请选择">
+					<el-option
+					  v-for="doctor in doctorList"
+					  :key="doctor.userID"
+					  :label="doctor.name"
+					  :value="doctor.userID">
+					</el-option>
+					</el-select>
+					<el-button @click="handleClick(scope.row, 'check')" size="medium">确认</el-button>
+				</div>
+			</div>
+			<el-button type="text" size="medium" slot="reference">接收</el-button>
+		  </el-popover>
+		  <el-button @click="handleClick(scope.row, 'refuse')" type="text" size="medium">拒绝</el-button>
+		  <el-button @click="handleClick(scope.row, 'ignore')" type="text" size="medium">忽略</el-button>
 		</template>
 	  </el-table-column>
 	</el-table>
@@ -150,7 +171,8 @@
 <script>
 	import Component from 'vue-class-component'
 	import BaseComponent from '../../components/BaseComponent'
-	import {getCreatePatient, createPatient} from '../../api/createPatient'
+	import {getCreatePatient, createPatient, checkPatient} from '../../api/createPatient'
+	import {getDoctorInfo} from '../../api/doctorInfo'
 	
 	@Component
 	export default class Information extends BaseComponent {
@@ -161,6 +183,8 @@
 		totalPatient = 0;
 	    LoadingText = "刷新";
 		centerDialogVisible = false;
+		doctorList = [];
+		selectedDoctor='';
 		form = {
 			address: "string",
 			dateOfBirth: "",
@@ -216,8 +240,46 @@
 			return now.getYear()-date.getYear()+1;
 	    }
 		
-		handleClick(row){
-			console.log(row);
+		handleClick(row, type){
+			console.log(row, type);
+			if(type==="check"&&this.selectedDoctor!=''){
+				checkPatient({doctorID: this.selectedDoctor, refuseReason: '',reviewerID: this.$store.state.user.token,serialNo: row.serialNo, status: 1}).then(response=>{
+					if(response.message==="success")
+						this.success('接收成功！')
+					this.doList();
+				}).catch(err=>{
+					console.log(err);
+				})
+			}else if(type==="refuse"){
+				checkPatient({doctorID: 0, refuseReason: '', reviewerID: this.$store.state.user.token, serialNo: row.serialNo, status: 2}).then(response=>{
+					if(response.message==="success")
+						this.success('拒绝成功！')
+					this.doList();
+				}).catch(err=>{
+					console.log(err);
+				})
+			}else if(type==="ignore"){
+				checkPatient({doctorID: 0, refuseReason: '', reviewerID: this.$store.state.user.token, serialNo: row.serialNo, status: 3}).then(response=>{
+					if(response.message==="success")
+						this.success('忽略成功！')
+					this.doList();
+				}).catch(err=>{
+					console.log(err);
+				})
+			}
+		}
+		
+		getDoctorList(){
+			getDoctorInfo({hospitalID: this.$store.state.user.token})
+			  .then(response=>{
+				//console.log(response);
+				this.doctorList = response.data;
+				//console.log(this.doctorList);
+				
+			  })
+			  .catch(err=>{
+			    console.log(err);
+			  })
 		}
 		
 		doList(){
@@ -233,7 +295,8 @@
 		}
 		
 		mounted(){
-			this.$emit("activeChanged",0)
+			this.$emit("activeChanged",0);
+			this.getDoctorList();
 			this.doList();
 		}
 	}

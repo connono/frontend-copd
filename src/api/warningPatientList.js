@@ -22,7 +22,10 @@ export function deleteWarningPatient(data){
   //var data = JsonToformData(data)
   return request({
 	url: 'http://localhost:18908/manage/alert/ignore',
-	method: 'post',
+	method: 'put',
+	headers: {
+      'Content-Type': 'application/json'
+    },
 	//headers: {
 	//  'Content-Type': "application/x-www-form-urlencoded;charset=utf-8"
     //},

@@ -18,3 +18,14 @@ export function createPatient(data) {
 	data
   })
 }
+
+export function checkPatient(data){
+  return request({
+	headers: {
+      'Content-Type': 'application/json'
+    },
+    url: 'http://localhost:18908/manage/register/audit',
+    method: 'post',
+	params:data
+	})
+}
