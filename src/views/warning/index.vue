@@ -118,7 +118,65 @@
 								<span v-if="item.manageItem.followupDate!=null">{{"，计划随访："+toDateText(item.manageItem.followupDate.replace(/-/g,"/"))+getDaysText(item.manageItem.followupDays)}}</span>
 							</div>
 							<div class="btn">
-								<el-button size="medium" type="primary" @click="showPatientDlg(item.patientID)">立即干预</el-button>
+								<el-button size="medium" type="primary" @click="openCreateFollowRecord(item.patientID,item.alertItemList)">立即干预</el-button>
+								<el-dialog
+								  title="新建随访记录"
+								  :visible.sync="centerDialogVisible"
+								  width="60%"
+								  center>
+									<el-form ref="form" :model="form" label-width="80px">
+										<el-form-item label="随访方式">
+											<el-radio v-model="form.followupMethod" label="门诊">门诊</el-radio>
+											<el-radio v-model="form.followupMethod" label="家访">家访</el-radio>
+											<el-radio v-model="form.followupMethod" label="电话">电话</el-radio>
+										</el-form-item>
+										<el-form-item label="随访结果">
+											<el-radio v-model="form.status" label="0">失访</el-radio>
+											<el-radio v-model="form.status" label="1" @change="form.failureReason=''">进行中</el-radio>
+											<el-radio v-model="form.status" label="2" @change="form.failureReason=''">有效</el-radio>
+										</el-form-item>
+										<el-form-item label="随访类型">
+											<el-radio v-model="form.followupType" label="常规随访">常规随访</el-radio>
+											<el-radio v-model="form.followupType" label="预警干预">预警干预</el-radio>
+											<el-radio v-model="form.followupType" :label="form.otherFailureReason">其他</el-radio>
+											<el-input
+											  v-model="form.otherFailureReason"
+											  size="medium"
+											  placeholder="请输入其他类型"></el-input>
+										</el-form-item>
+										<el-form-item label="失访原因">
+											<el-input
+											  v-model="form.failureReason"
+											  placeholder="请输入内容"
+											  :disabled="form.status!=0"></el-input>
+										</el-form-item>
+										<el-form-item label="是否死亡">
+											<el-radio v-model="form.death" :label="true">是</el-radio>
+											<el-radio v-model="form.death" :label="false" @change="form.deathTime=''">否</el-radio>
+										</el-form-item>
+										<el-form-item label="死亡时间">
+											<el-date-picker
+											  :disabled="!form.death"
+											  v-model="form.deathTime"
+											  type="datetime"
+											  placeholder="选择日期时间">
+											</el-date-picker>
+										</el-form-item>
+										<el-form-item label="摘要记录">
+											<el-input
+											  type="textarea"
+											  autosize
+											  placeholder="请输入内容"
+											  v-model="form.content">
+											</el-input>
+										</el-form-item>
+										
+									</el-form>
+									<span slot="footer" class="dialog-foowter">
+										<el-button @click="centerDialogVisible = false">取 消</el-button>
+										<el-button type="primary" @click="submitCreateFollows">确 定</el-button>
+									</span>
+								</el-dialog>
 								<el-popover
 									trigger="click"
 									width="210"
@@ -162,7 +220,7 @@
     import ImgMLW3 from '../../images/data/mlw3.png'
     import ImgMLW4 from '../../images/data/mlw4.png'
 	import Star from '../../components/graphic/Star'
-	import {getWarningPatientCount,getWarningPatientList,deleteWarningPatient} from '../../api/warningPatientList'
+	import {getWarningPatientCount,getWarningPatientList,deleteWarningPatient,createFollowRecord} from '../../api/warningPatientList'
 	@Component({
 		components: {
 			star: Star
@@ -179,6 +237,20 @@
 	  LoadingText = "刷新"
 	  ignoreReason = "重复预警"
 	  warningPatientList=[]
+	  centerDialogVisible=false;
+	  form={
+		followupMethod: '',
+		status: '1',
+		followupType: '',
+		failureReason: '',
+		death: false,
+		deathTime: '',
+		content: '',
+		otherFailureReason: '',
+	  }
+	  selectedPatientID=''
+	  selectedAlertItems=[]
+	  
 	  imgMLM1= ImgMLW1
 	  imgMLM2= ImgMLW2
 	  imgMLM3= ImgMLW3
@@ -222,8 +294,56 @@
 		});
 		
 	  }
+	  
+	  openCreateFollowRecord(patientID, alertItems){
+		this.centerDialogVisible = true;
+		this.selectedPatientID = patientID;
+		this.selectedAlertItems = alertItems;
+	  }
+	  
+		P_create = function(func,data){
+			return new Promise((resolve, reject)=>{
+				func(data)
+				  .then(response=>{
+					resolve(response.data);
+			      })
+			      .catch(err=>{
+					reject(err);
+			      })
+			    })
+		}
+	  
+	  submitCreateFollows(){
+		var P_create_follows = this.selectedAlertItems.map((item)=>{
+			var planDate = item.alertTime.replace(' ','T');
+			planDate += 'Z';
+			return this.P_create(createFollowRecord,{
+			  alertSerialNo: item.serialNo,
+			  content: this.form.content,
+			  deathTime: this.form.deathTime,
+			  executeDoctorID: this.$store.state.user.token,
+			  failureReason: this.form.failureReason,
+			  followupMethod: this.form.followupMethod,
+			  followupType: this.form.followupType,
+			  patientID: this.selectedPatientID,
+			  planDate: planDate,
+			  planSerialNo: "",
+			  status: this.form.status,
+			  summary: this.form.summary,
+			  templateCode: 0});
+		})
+		Promise.all(P_create_follows)
+		  .then(res=>{
+			this.success('提交成功')
+			this.centerDialogVisible = false;
+		  })
+		  .catch(err=>{
+			this.error('提交失败')
+		  })
+	  }
+	  
 	  showPatientDlg(patientID){
-	    this.alert('即将跳转'+patientID+'所在的页面')
+	    this.$router.push("/patientInfo/"+patientID)
 	  }
 	  
 	  dateToAge(str){

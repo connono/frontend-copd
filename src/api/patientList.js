@@ -15,3 +15,11 @@ export function getPatientCount(data){
 		params: data
 	})
 }
+
+export function getSubhospital(data) {
+  return request({
+    url: 'http://localhost:18908/dict/org/subhospital',
+    method: 'get',
+	params: data
+  })
+}

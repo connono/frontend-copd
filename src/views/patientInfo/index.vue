@@ -59,12 +59,12 @@
 						</el-col>
 						<el-col :span="4">
 							<el-form-item label="负责医生">
-								<el-input v-model="information_form.doctorID" readonly></el-input>
+								<el-input v-model="information_form.doctorName" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label="所属机构">
-								<el-input v-model="information_form.hospitalID" readonly></el-input>
+								<el-input v-model="information_form.orgName" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<!--<el-col :span="4">
@@ -238,14 +238,16 @@
 					</el-table-column>
 					<el-table-column
 						prop="summary"
-						label="记录摘要"
-						width="180">
+						label="记录摘要">
 					</el-table-column>
 					<!--<el-table-column
 						prop="action"
 						label="操作"
 						width="180">
 					</el-table-column>-->
+					<div slot="append" style="text-align: center; line-height: 48px">
+						<span>+ 添加</span>
+					</div>
 				</el-table>
 				<el-pagination
 					@size-change="handleSizeChangeFollowing"

@@ -83,7 +83,7 @@ export const constantRoutes = [
 	},{
 		path: 'tayuan',
 		name: 'Tayuan',
-		component: () => import('@/views/information/index'),
+		component: () => import('@/views/otherInformation/index'),
 		meta: { title: '他院', icon: 'tayuan' }
 	}]
   },

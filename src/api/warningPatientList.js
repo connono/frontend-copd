@@ -32,3 +32,14 @@ export function deleteWarningPatient(data){
 	params: data
   })
 }
+
+export function createFollowRecord(data){
+  return request({
+	url: 'http://localhost:18908/manage/followup/record',
+	method: 'post',
+	headers: {
+      'Content-Type': 'application/json'
+    },
+	data
+  })
+}

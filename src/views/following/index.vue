@@ -29,10 +29,7 @@
 		<el-tab-pane v-for="(item, index) in list" :label="item">
 		    <el-table
 			  :data="tableData[selectedTab]"
-			  stripe
-			  cell-style="font-size:16px; text-align: center;"
-			  header-cell-style="font-size: 18px; text-align: center;"
-			>
+			  stripe>
 				<el-table-column
 				  fixed
 				  prop="serialNo"
@@ -145,23 +142,7 @@
 				  width="150">
 					<template slot-scope="scope">
 						<div v-if="scope.row.status==0">
-							<el-button @click="centerDialogVisible = true" type="text" size="medium">立即随访</el-button>
-							<el-dialog
-							  title="填写随访表"
-							  :visible.sync="centerDialogVisible"
-							  width="60%"
-							  center>
-								<div>待填充</div>
-								<!--<el-form ref="form" :model="form" label-width="80px">
-									<el-form-item label="姓名">
-										<el-input v-model="form.name"></el-input>
-									</el-form-item>
-								</el-form>-->
-								<span slot="footer" class="dialog-footer">
-									<el-button @click="centerDialogVisible = false">取 消</el-button>
-									<el-button type="primary" @click="submitRecord">确 定</el-button>
-								</span>
-							</el-dialog>
+							<el-button @click="openCreateFollowRecord(scope.row)" type="text" size="medium">立即随访</el-button>
 							<el-button @click="handleIgnore(scope.row.serialNo)" type="text" size="medium">忽略</el-button>
 							<!--<el-popover
 							  trigger="click"
@@ -201,6 +182,63 @@
 			</el-pagination>
 		</el-tab-pane>
 	</el-tabs>
+	<el-dialog
+	  title="新建随访记录"
+	  :visible.sync="centerDialogVisible"
+	  width="60%"
+	  center>
+		<el-form ref="form" :model="form" label-width="80px">
+			<el-form-item label="随访方式">
+				<el-radio v-model="form.followupMethod" label="门诊">门诊</el-radio>
+				<el-radio v-model="form.followupMethod" label="家访">家访</el-radio>
+				<el-radio v-model="form.followupMethod" label="电话">电话</el-radio>
+			</el-form-item>
+			<el-form-item label="随访结果">
+				<el-radio v-model="form.status" label="0">失访</el-radio>
+				<el-radio v-model="form.status" label="1" @change="form.failureReason=''">进行中</el-radio>
+				<el-radio v-model="form.status" label="2" @change="form.failureReason=''">有效</el-radio>
+			</el-form-item>
+			<el-form-item label="随访类型">
+				<el-radio v-model="form.followupType" label="常规随访">常规随访</el-radio>
+				<el-radio v-model="form.followupType" label="预警干预">预警干预</el-radio>
+				<el-radio v-model="form.followupType" :label="form.otherFailureReason">其他</el-radio>
+				<el-input
+				  v-model="form.otherFailureReason"
+				  size="medium"
+				  placeholder="请输入其他类型"></el-input>
+			</el-form-item>
+			<el-form-item label="失访原因">
+				<el-input
+				  v-model="form.failureReason"
+				  placeholder="请输入内容"
+				  :disabled="form.status!=0"></el-input>
+			</el-form-item>
+			<el-form-item label="是否死亡">
+				<el-radio v-model="form.death" :label="true">是</el-radio>
+				<el-radio v-model="form.death" :label="false" @change="form.deathTime=''">否</el-radio>
+			</el-form-item>
+			<el-form-item label="死亡时间">
+				<el-date-picker
+				  :disabled="!form.death"
+				  v-model="form.deathTime"
+				  type="datetime"
+				  placeholder="选择日期时间">
+				</el-date-picker>
+			</el-form-item>
+			<el-form-item label="摘要记录">
+				<el-input
+				  type="textarea"
+				  autosize
+				  placeholder="请输入内容"
+				  v-model="form.content">
+				</el-input>
+			</el-form-item>
+		</el-form>
+		<span slot="footer" class="dialog-foowter">
+			<el-button @click="centerDialogVisible = false">取 消</el-button>
+			<el-button type="primary" @click="submitCreateFollows">确 定</el-button>
+		</span>
+	</el-dialog>
   </div>
 </template>
 
@@ -212,7 +250,7 @@
     import ImgMLW2 from '../../images/data/mlw2.png'
     import ImgMLW3 from '../../images/data/mlw3.png'
     import ImgMLW4 from '../../images/data/mlw4.png'
-	import {getFollowingPatientList,ignoreFollowingPatient,getFollowingPatientCount} from '../../api/followingPatientList'
+	import {getFollowingPatientList,ignoreFollowingPatient,getFollowingPatientCount,createFollowRecord} from '../../api/followingPatientList'
 	import moment from 'moment'
 	@Component({
 	  components: {
@@ -225,7 +263,7 @@
 		list=['待随访','已随访','已忽略']
 		currentPage=[1,1,1]
 		pageSize=15;
-		centerDialogVisible=false
+		centerDialogVisible=false;
 		isLoading=false
 		LoadingText="刷新"
 		searchName=""
@@ -237,6 +275,20 @@
 		imgMLM2= ImgMLW2
 		imgMLM3= ImgMLW3
 		imgMLM4= ImgMLW4
+		
+		form={
+		  followupMethod: '',
+		  status: '1',
+		  followupType: '',
+		  failureReason: '',
+		  death: false,
+		  deathTime: '',
+		  content: '',
+		  otherFailureReason: '',
+		}
+		selectedPatientID=''
+	    selectedSerialNo=''
+		selectedPlanDate=''
 
 		dateToAge(str){
 			var date = new Date(str);
@@ -293,6 +345,8 @@
 			})
 		}
 		
+		
+		
 		handleDateChange(){
 			this.getCount();
 			this.getAllList();
@@ -329,7 +383,42 @@
 			this.$router.push("/patientInfo/"+row.patientID)
 		}
 		
-		submitRecord(){}
+	
+	  openCreateFollowRecord(row){
+		this.centerDialogVisible = true;
+		this.selectedPatientID = row.patientID;
+		this.selectedPlanDate = row.planDate;
+		this.selectedSerialNo = row.serialNo;
+	  }
+	  
+	  
+	  submitCreateFollows(){
+		//console.log(this.form,this.selectedPatientID,this.selectedPlanDate,this.selectedSerialNo);
+		var planDate = this.selectedPlanDate.replace(' ','T');
+		planDate += 'Z';
+		createFollowRecord({
+		  alertSerialNo: '',
+		  content: this.form.content,
+		  deathTime: this.form.deathTime,
+		  executeDoctorID: this.$store.state.user.token,
+		  failureReason: this.form.failureReason,
+		  followupMethod: this.form.followupMethod,
+		  followupType: this.form.followupType,
+		  patientID: this.selectedPatientID,
+		  planDate: planDate,
+		  planSerialNo: this.selectedSerialNo,
+		  status: this.form.status,
+		  summary: this.form.summary,
+		  templateCode: 0})
+		  .then(res=>{
+			this.success('提交成功')
+			this.centerDialogVisible = false;
+		  })
+		  .catch(err=>{
+			this.error('提交失败')
+		  })
+	    }
+		
 		/*handleSearchName(searchName){
 			this.tableData=this.tableData.filter((item)=>{return item.name==searchName});
 			this.searchedName = this.searchName;
