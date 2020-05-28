@@ -1,18 +1,10 @@
 <template>
   <div class="information-container">
-    <div>
-		<span>请选择医院：</span>
-		<el-cascader
-		  v-model="selectedHospital"
-		  :options="subhospitalTree"
-		  :props="{ expandTrigger: 'hover' }"
-		  @change="doList"></el-cascader>
-	</div>
     <div class="information-text">
 		<span>共&nbsp;{{this.patientCount.totalCount}}&nbsp;位患者，{{this.patientCount.managingCount}}&nbsp;位管理中的患者，&nbsp;{{this.patientCount.referralInCount}}&nbsp;位转入患者，{{this.patientCount.referralOutCount}}&nbsp;位转出患者。</span>
 		<div style="display: inline-block; float: right">
 			<span>管理状态：</span>
-			<el-select v-model="selectedType" placeholder="全部" @change="doList">
+			<el-select v-model="selectedType" placeholder="全部" @change="handleSelect">
 				<el-option label="全部" value="0"></el-option>
 				<el-option label="管理中" value="1"></el-option>
 				<el-option label="转出" value="2"></el-option>
@@ -111,14 +103,14 @@
 	import Component from 'vue-class-component'
 	import BaseComponent from '../../components/BaseComponent'
 	import Star from '../../components/graphic/Star'
-	import {getPatientList, getPatientCount, getSubhospital} from '../../api/patientList'
+	import {getPatientListDoctor, getPatientCountDoctor} from '../../api/patientList'
 	
 	@Component({
 		components:{
 			star: Star
 		}
 	})
-	export default class OtherInformation extends BaseComponent {
+	export default class DoctorInformation extends BaseComponent {
 		tableData = [];
 		currentPage = 1;
 		patientCount = {
@@ -129,9 +121,6 @@
 		};
 		pageSize = 15;
 		selectedType='';
-		selectedHospital='';
-		
-		subhospitalTree=[]
 		
 		handleSizeChange(val){
 			this.pageSize = val;
@@ -148,6 +137,17 @@
 			this.$router.push("/patientInfo/"+row.patientID)
 		}
 		
+		handleSelect(){
+			getPatientListDoctor({doctorID: this.$store.state.user.token, pageIndex: this.currentPage, pageOffset: this.pageSize, type: this.selectedType})
+			  .then(response=>{
+				this.tableData = response.data.content;
+				//console.log(this.tableData);
+			  })
+			  .catch(err=>{
+				this.error('获取失败')
+			})
+		}
+		
 		dateToAge(str){
 			var date = new Date(str);
 			var now = new Date();
@@ -155,16 +155,10 @@
 	    }
 		
 		doList(){
-			if(this.selectedHospital==''){
-				this.error('请选择医院');
-				return;
-			}
-			var orgCode = this.selectedHospital[this.selectedHospital.length-1];
-			var selectedType = (this.selectedType=='')?0:this.selectedType;
-			getPatientCount({orgCode: orgCode})
+			getPatientCountDoctor({doctorID: this.$store.state.user.token})
 			  .then(response=>{
 			    this.patientCount = response.data;
-				getPatientList({orgCode: orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: selectedType})
+				getPatientListDoctor({doctorID: this.$store.state.user.token, pageIndex: this.currentPage, pageOffset: this.pageSize, type: this.selectedType})
 				  .then(response=>{
 					this.tableData = response.data.content;
 					console.log(this.tableData);
@@ -176,30 +170,20 @@
 			
 		}
 		
-		getSubhospitalTree(){
-			getSubhospital({orgCode: this.$store.state.user.orgCode})
-			  .then(response=>{
-			    var stack = [].concat(response.data.children);
-				while(stack.length!=0){
-					var node = stack.pop();
-					node.value = node.orgCode;
-					node.label = node.orgName;
-					if(node.children){
-						stack.push(...node.children);
-						node.children.unshift({value: node.orgCode, label: node.orgName});
-					}
-				}
-				this.subhospitalTree = response.data.children;
-				//console.log(response.data);
-			  })
-			  .catch(err=>{
-				this.error(err);
-			  })
-		}
-		
 		mounted(){
 			this.$emit("activeChanged",0)
-			this.getSubhospitalTree();
+			getPatientCountDoctor({doctorID: this.$store.state.user.token})
+			  .then(response=>{
+			    this.patientCount = response.data;
+				getPatientListDoctor({doctorID: this.$store.state.user.token, pageIndex: this.currentPage, pageOffset: this.pageSize, type: 0})
+				  .then(response=>{
+					this.tableData = response.data.content;
+					console.log(this.tableData);
+			      })
+				  .catch(err=>{
+					this.error('获取失败')
+				})
+			  })
 		}
 	}
 </script>

@@ -53,3 +53,23 @@ export function getPatientData(data){
 	})
 	
 }
+
+export function createReferralApply(data){
+	return request({
+		url: 'http://localhost:18908/manage/referral/apply',
+		method: 'post',
+		headers: {
+		  'Content-Type': 'application/json'
+		},
+		data
+	})
+}
+
+export function createReferralBack(data){
+	return request({
+		url: 'http://localhost:18908/manage/referral/back',
+		method: 'put',
+		params: data
+	})
+	
+}

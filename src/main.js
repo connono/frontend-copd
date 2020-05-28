@@ -15,7 +15,7 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 import echarts from 'echarts'
-
+import dict from './dict'
 
 /**
  * If you don't want to use mock-server
@@ -32,6 +32,7 @@ if (process.env.NODE_ENV === 'production') {
 
 
 Vue.prototype.$echarts = echarts
+Vue.prototype.$dict = dict
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })

@@ -291,7 +291,7 @@
     import ImgMLW2 from '../../images/data/mlw2.png'
     import ImgMLW3 from '../../images/data/mlw3.png'
     import ImgMLW4 from '../../images/data/mlw4.png'
-	import {getFollowingPatientList,ignoreFollowingPatient,getFollowingPatientCount,createFollowRecord,createFollowPlan} from '../../api/followingPatientList'
+	import {getFollowingPatientListReferral,ignoreFollowingPatient,getFollowingPatientCountReferral,createFollowRecord,createFollowPlan} from '../../api/followingPatientList'
 	import moment from 'moment'
 	@Component({
 	  components: {
@@ -362,9 +362,9 @@
 		}
 		
 		getAllList(){
-			var P_getListToFollowup = this.P_getList(getFollowingPatientList, {startDate: this.selectDate[0],endDate: this.selectDate[1],pageIndex:1,pageOffset:this.pageSize,status:0,viewerID:this.$store.state.user.token});
-			var P_getListFollowedup = this.P_getList(getFollowingPatientList, {startDate: this.selectDate[0],endDate: this.selectDate[1],pageIndex:1,pageOffset:this.pageSize,status:1,viewerID:this.$store.state.user.token});
-			var P_getListAbolishedCount = this.P_getList(getFollowingPatientList, {startDate: this.selectDate[0],endDate: this.selectDate[1],pageIndex:1,pageOffset:this.pageSize,status:2,viewerID:this.$store.state.user.token});
+			var P_getListToFollowup = this.P_getList(getFollowingPatientListReferral, {startDate: this.selectDate[0],endDate: this.selectDate[1],pageIndex:1,pageOffset:this.pageSize,status:0,viewerID:this.$store.state.user.token});
+			var P_getListFollowedup = this.P_getList(getFollowingPatientListReferral, {startDate: this.selectDate[0],endDate: this.selectDate[1],pageIndex:1,pageOffset:this.pageSize,status:1,viewerID:this.$store.state.user.token});
+			var P_getListAbolishedCount = this.P_getList(getFollowingPatientListReferral, {startDate: this.selectDate[0],endDate: this.selectDate[1],pageIndex:1,pageOffset:this.pageSize,status:2,viewerID:this.$store.state.user.token});
 			Promise.all([P_getListToFollowup,P_getListFollowedup,P_getListAbolishedCount])
 			  .then(res=>{
 				this.tableData = res.map(item=>{
@@ -379,7 +379,7 @@
 		}
 		
 		getList(){
-			getFollowingPatientList({startDate: this.selectDate[0],endDate: this.selectDate[1],pageIndex:this.currentPage,pageOffset:this.pageSize,status:this.selectedTab,viewerID:this.$store.state.user.token})
+			getFollowingPatientListReferral({startDate: this.selectDate[0],endDate: this.selectDate[1],pageIndex:this.currentPage,pageOffset:this.pageSize,status:this.selectedTab,viewerID:this.$store.state.user.token})
 			  .then(res=>{
 				this.$set(tableData, this.selectedTab, res.content);
 			  })
@@ -389,7 +389,7 @@
 		}
 		
 		getCount(){
-			getFollowingPatientCount({startDate: this.selectDate[0],endDate: this.selectDate[1],viewerID:this.$store.state.user.token}).then(response=>{
+			getFollowingPatientCountReferral({startDate: this.selectDate[0],endDate: this.selectDate[1],viewerID:this.$store.state.user.token}).then(response=>{
 				var data = response.data;
 				this.patientTotal=[data.toFollowupCount,data.followedupCount,data.abolishedCount];
 				console.log(this.patientTotal)

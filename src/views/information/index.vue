@@ -158,7 +158,7 @@
 			getPatientCount({orgCode: this.$store.state.user.orgCode})
 			  .then(response=>{
 			    this.patientCount = response.data;
-				getPatientList({orgCode: this.$store.state.user.orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: 0})
+				getPatientList({orgCode: this.$store.state.user.orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: this.selectedType})
 				  .then(response=>{
 					this.tableData = response.data.content;
 					console.log(this.tableData);
@@ -172,7 +172,18 @@
 		
 		mounted(){
 			this.$emit("activeChanged",0)
-			this.doList();
+			getPatientCount({orgCode: this.$store.state.user.orgCode})
+			  .then(response=>{
+			    this.patientCount = response.data;
+				getPatientList({orgCode: this.$store.state.user.orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: 0})
+				  .then(response=>{
+					this.tableData = response.data.content;
+					console.log(this.tableData);
+			      })
+				  .catch(err=>{
+					this.error('获取失败')
+				})
+			  })
 		}
 	}
 </script>

@@ -59,6 +59,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { getPatientList } from '../../api/user'
 
 export default {
   name: 'Login',
@@ -110,15 +111,37 @@ export default {
         this.$refs.password.focus()
       })
     },
+	P_getList(func,data){
+		return new Promise((resolve, reject)=>{
+			func(data)
+			  .then(response=>{
+				resolve(response.data);
+		      })
+		      .catch(err=>{
+				reject(err);
+		      })
+		    })
+	},
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
 		  //console.log('submit')
+		  var that = this
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-		    //console.log('login success')
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
+		    var P_getList_1 = this.P_getList(getPatientList, {viewerID: this.$store.state.user.token, type: 1})
+		    var P_getList_2 = this.P_getList(getPatientList, {viewerID: this.$store.state.user.token, type: 2})
+		    var P_getList_3 = this.P_getList(getPatientList, {viewerID: this.$store.state.user.token, type: 3});
+			Promise.all([P_getList_1,P_getList_2,P_getList_3]).then((res)=>{
+				localStorage.setItem('patientList', JSON.stringify(res));
+				//console.log('login success')
+				this.loading = false
+				this.$router.push({ path: this.redirect || '/' })
+				
+			}).catch((err)=>{
+			  this.loading = false
+			  //console.log(err);
+			})
           }).catch((err) => {
             this.loading = false
 			//console.log('login fail',err)

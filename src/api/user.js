@@ -25,3 +25,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function getPatientList(data){
+	return request({
+	  url: 'http://localhost:18908/manage/index/patient/namelist',
+	  method: 'get',
+	  params: data
+	})
+}

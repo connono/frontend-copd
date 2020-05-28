@@ -18,6 +18,23 @@ export function getWarningPatientList(data) {
   })
 }
 
+export function getWarningPatientCountReferral(data){
+	return request({
+		url: 'http://localhost:18908/manage/alert/count/referral',
+		method: 'get',
+		params: data
+	})
+	
+}
+
+export function getWarningPatientListReferral(data) {
+  return request({
+    url: 'http://localhost:18908/manage/alert/page/referral',
+    method: 'get',
+	params: data
+  })
+}
+
 export function deleteWarningPatient(data){
   //var data = JsonToformData(data)
   return request({

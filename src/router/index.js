@@ -30,6 +30,9 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+
+ 
+
 export const constantRoutes = [
   {
     path: '/login',
@@ -51,12 +54,22 @@ export const constantRoutes = [
 		path: 'warning',
 		name: 'Warning',
 		component: () => import('@/views/warning/index'),
-		meta: { title: '预警列表', icon: 'warning' }
+		meta: { title: '预警列表（本院）', icon: 'warning' }
+	},{
+		path: 'referralWarning',
+		name: 'ReferralWarning',
+		component: () => import('@/views/referralWarning/index'),
+		meta: { title: '预警列表（转诊）', icon: 'warning' }
 	},{
 		path: 'following',
 		name: 'Following',
 		component: () => import('@/views/following/index'),
-		meta: { title: '随访列表', icon: 'following' }
+		meta: { title: '随访列表（本院）', icon: 'following' }
+	},{
+		path: 'referralFollowing',
+		name: 'ReferralFollowing',
+		component: () => import('@/views/referralFollowing/index'),
+		meta: { title: '随访列表（转诊）', icon: 'following' }
 	},{
 		path: 'create',
 		name: 'Create',
@@ -85,6 +98,11 @@ export const constantRoutes = [
 		name: 'Tayuan',
 		component: () => import('@/views/otherInformation/index'),
 		meta: { title: '他院', icon: 'tayuan' }
+	},{
+		path: 'doctor',
+		name: 'Doctor',
+		component: () => import('@/views/doctorInformation/index'),
+		meta: { title: '医生', icon: 'doctor' },
 	}]
   },
   {
