@@ -31,8 +31,6 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 
- 
-
 export const constantRoutes = [
   {
     path: '/login',
@@ -46,91 +44,94 @@ export const constantRoutes = [
     hidden: true
   },
   {
-	path: '/',
-	name: 'Manage',
-	meta: {title: '患者管理', icon: 'manage'},
-	component: Layout,
-	children: [{
-		path: 'warning',
-		name: 'Warning',
-		component: () => import('@/views/warning/index'),
-		meta: { title: '预警列表（本院）', icon: 'warning' }
-	},{
-		path: 'referralWarning',
-		name: 'ReferralWarning',
-		component: () => import('@/views/referralWarning/index'),
-		meta: { title: '预警列表（转诊）', icon: 'warning' }
-	},{
-		path: 'following',
-		name: 'Following',
-		component: () => import('@/views/following/index'),
-		meta: { title: '随访列表（本院）', icon: 'following' }
-	},{
-		path: 'referralFollowing',
-		name: 'ReferralFollowing',
-		component: () => import('@/views/referralFollowing/index'),
-		meta: { title: '随访列表（转诊）', icon: 'following' }
-	},{
-		path: 'create',
-		name: 'Create',
-		component: () => import('@/views/create/index'),
-		meta: { title: '患者注册', icon: 'create' }
-	},{
-		path: 'patientInfo/:patientID',
-		name: 'PatientInfo',
-		component: () => import('@/views/patientInfo/index'),
-		meta: { title: '患者信息', icon: 'info' },
-		hidden: true
-	}]
+    path: '/',
+    name: 'Manage',
+    meta: { title: '患者管理', icon: 'manage' },
+    component: Layout,
+    children: [{
+      path: 'warning',
+      name: 'Warning',
+      component: () => import('@/views/warning/index'),
+      meta: { title: '预警列表（本院）', icon: 'warning' }
+    }, {
+      path: 'referralWarning',
+      name: 'ReferralWarning',
+      component: () => import('@/views/referralWarning/index'),
+      meta: { title: '预警列表（转诊）', icon: 'warning' }
+    }, {
+      path: 'following',
+      name: 'Following',
+      component: () => import('@/views/following/index'),
+      meta: { title: '随访列表（本院）', icon: 'following' }
+    }, {
+      path: 'referralFollowing',
+      name: 'ReferralFollowing',
+      component: () => import('@/views/referralFollowing/index'),
+      meta: { title: '随访列表（转诊）', icon: 'following' }
+    }, {
+      path: 'create',
+      name: 'Create',
+      component: () => import('@/views/create/index'),
+      meta: { title: '患者注册', icon: 'create' }
+    }, {
+      path: 'patientInfo/:patientID',
+      name: 'PatientInfo',
+      component: () => import('@/views/patientInfo/index'),
+      meta: { title: '患者信息', icon: 'info' },
+      hidden: true
+    }]
   },
   {
-	path: '/list',
-	name: 'List',
-	meta: {title: '患者列表', icon: 'list'},
-	component: Layout,
-	children: [{
-		path: 'benyuan',
-		name: 'Benyuan',
-		component: () => import('@/views/information/index'),
-		meta: { title: '本院', icon: 'benyuan' }
-	},{
-		path: 'tayuan',
-		name: 'Tayuan',
-		component: () => import('@/views/otherInformation/index'),
-		meta: { title: '他院', icon: 'tayuan' }
-	},{
-		path: 'doctor',
-		name: 'Doctor',
-		component: () => import('@/views/doctorInformation/index'),
-		meta: { title: '医生', icon: 'doctor' },
-	}]
+    path: '/list',
+    name: 'List',
+    meta: { title: '患者列表', icon: 'list' },
+    component: Layout,
+    children: [{
+      path: 'benyuan',
+      name: 'Benyuan',
+      component: () => import('@/views/information/index'),
+      meta: { title: '本院', icon: 'benyuan' }
+    }, {
+      path: 'tayuan',
+      name: 'Tayuan',
+      component: () => import('@/views/otherInformation/index'),
+      meta: { title: '他院', icon: 'tayuan' }
+    }, {
+      path: 'doctor',
+      name: 'Doctor',
+      component: () => import('@/views/doctorInformation/index'),
+      meta: { title: '医生', icon: 'doctor' }
+    }]
   },
   {
-	path: '/tansfer',
-	name: 'Tansfer',
-	meta: {title: '患者转诊', icon: 'tansfer'},
-	component: Layout,
-	children: [{
-		path: 'audit',
-		name: 'Audit',
-		component: () => import('@/views/correct/index'),
-		meta: { title: '转入审核', icon: 'audit' }
-	},{
-		path: 'manage',
-		name: 'Manage',
-		component: () => import('@/views/manage/index'),
-		meta: { title: '转入管理', icon: 'manage' }
-	},{
-		path: 'trace',
-		name: 'Trace',
-		component: () => import('@/views/manage/index'),
-		meta: { title: '转出追踪', icon: 'trace' }
-	},{
-		path: 'auto',
-		name: 'Auto',
-		component: () => import('@/views/auto/index'),
-		meta: { title: '自动审核设置', icon: 'auto' }
-	}]
+    path: '/tansfer',
+    name: 'Tansfer',
+    meta: { title: '患者转诊', icon: 'tansfer' },
+    component: Layout,
+    children: [{
+      path: 'audit',
+      name: 'Audit',
+      component: () => import('@/views/correct/index'),
+      meta: { title: '转入审核', icon: 'audit' }
+    },
+    {
+      path: 'manage',
+      name: 'Manage',
+      component: () => import('@/views/manage/index'),
+      meta: { title: '转入管理', icon: 'manage' }
+    },
+    {
+      path: 'trace',
+      name: 'Trace',
+      component: () => import('@/views/manage/index'),
+      meta: { title: '转出追踪', icon: 'trace' }
+    },
+    {
+      path: 'auto',
+      name: 'Auto',
+      component: () => import('@/views/auto/index'),
+      meta: { title: '自动审核设置', icon: 'auto' }
+    }]
   },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

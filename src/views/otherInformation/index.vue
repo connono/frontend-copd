@@ -1,6 +1,6 @@
 <template>
   <div class="information-container">
-    <div>
+    <div style="margin-bottom:20px;">
 		<span>请选择医院：</span>
 		<el-cascader
 		  v-model="selectedHospital"

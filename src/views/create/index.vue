@@ -139,12 +139,12 @@
 				<p>请选择接收医生：</p>
 				<div style="display: flex">
 					<el-select v-model="selectedDoctor" placeholder="请选择">
-					<el-option
-					  v-for="doctor in doctorList"
-					  :key="doctor.userID"
-					  :label="doctor.name"
-					  :value="doctor.userID">
-					</el-option>
+						<el-option
+							v-for="doctor in doctorList"
+							:key="doctor.userID"
+							:label="doctor.name"
+							:value="doctor.userID">
+						</el-option>
 					</el-select>
 					<el-button @click="handleClick(scope.row, 'check')" size="medium">确认</el-button>
 				</div>
@@ -163,7 +163,7 @@
 		:page-sizes="[15,30,45,60]"
 		:page-size="pageSize"
 		layout="total, sizes, prev, pager, next, jumper"
-		:total="totalPatient"
+		:total="totalPatient">
 	</el-pagination>
   </div>
 </template>
@@ -183,35 +183,29 @@
 		totalPatient = 0;
 	    LoadingText = "刷新";
 		centerDialogVisible = false;
-		doctorList = [];
+		doctorList = [{
+			userID: this.$store.state.user.token,
+			name: ''
+		}];
 		selectedDoctor='';
 		form = {
-			address: "string",
-			dateOfBirth: "",
-			doctorID: 0,
-			doctorName: "",
-			education: "",
-			email: "string",
-			height: 0,
-			hospitalID: 0,
-			hospitalName: "",
-			identityCardNumber: "",
-			manageClass: 0,
-			manageStatus: 0,
-			mobilePhone: "string",
-			name: "",
-			orgCode: "string",
-			password: "",
-			patientFeature: "string",
-			phone: "",
-			photo: "string",
-			profession: "",
-			sex: 0,
-			status: 0,
-			userID: 0,
-			userName: "",
-			weChat: "string",
-			weight: 0
+			address: null,
+  			dateOfBirth: "",
+  			doctorID: 0,
+  			education: null,
+  			email: null,
+  			height: 0,
+  			identityCardNumber: null,
+  			mobilePhone: null,
+  			name: "",
+  			orgCode: "",
+  			password: "string",
+  			patientFeature: null,
+  			profession: null,
+  			sex: 0,
+  			userName: "",
+  			weChat: null,
+  			weight: 0
 		}
 		
 		submitCreatePatient(){
@@ -270,7 +264,8 @@
 		}
 		
 		getDoctorList(){
-			getDoctorInfo({hospitalID: this.$store.state.user.token})
+			if(this.$store.state.user.auth==1){
+				getDoctorInfo({hospitalID: this.$store.state.user.token})
 			  .then(response=>{
 				//console.log(response);
 				this.doctorList = response.data;
@@ -280,6 +275,15 @@
 			  .catch(err=>{
 			    console.log(err);
 			  })
+			} else {
+				getDoctorName({doctorID: this.$store.state.user.token})
+				.then(response=>{
+					this.doctorList[0].name = response.data
+				})
+				.catch(err=>{
+					console.log(err)
+				})
+			}
 		}
 		
 		doList(){

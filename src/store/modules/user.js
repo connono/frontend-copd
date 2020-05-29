@@ -25,20 +25,20 @@ const actions = {
   // user login
   login({ commit }, userInfo) {
     const jsonData = {
-		userName: userInfo.userName.trim(),
-		password: userInfo.password
-	}
-	
+      userName: userInfo.userName.trim(),
+      password: userInfo.password
+    }
+
     return new Promise((resolve, reject) => {
       login(JsonToformData(jsonData)).then(response => {
-        const { data } = response;
-		//console.log(data);
+        const { data } = response
+        // console.log(data);
         commit('SET_TOKEN', data.userID)
-        setToken(data.userID);
-		commit('SET_AUTH', data.auth);
-		setAuth(data.auth);
-		commit('SET_ORGCODE', data.orgCode);
-		setOrgCode(data.orgCode);
+        setToken(data.userID)
+        commit('SET_AUTH', data.auth)
+        setAuth(data.auth)
+        commit('SET_ORGCODE', data.orgCode)
+        setOrgCode(data.orgCode)
         resolve()
       }).catch(error => {
         reject(error)
@@ -47,7 +47,7 @@ const actions = {
   },
 
   // get user info
-  /*getInfo({ commit, state }) {
+  /* getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { data } = response
@@ -69,18 +69,18 @@ const actions = {
 
   // user logout
   logout({ commit, state }) {
-    //return new Promise((resolve, reject) => {
+    // return new Promise((resolve, reject) => {
     // logout(state.token).then(() => {
-        commit('SET_TOKEN', '')
-        removeToken()
-		removeAuth()
-		removeOrgCode()
-        resetRouter()
+    commit('SET_TOKEN', '')
+    removeToken()
+    removeAuth()
+    removeOrgCode()
+    resetRouter()
     //    resolve()
     //  }).catch(error => {
     //    reject(error)
     //  })
-    //})
+    // })
   },
 
   // remove token
