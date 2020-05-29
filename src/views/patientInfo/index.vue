@@ -3,9 +3,8 @@
     <div>
 		<el-tabs v-model="activeName" @tab-click="handleClick">
 			<el-tab-pane label="基本信息" name="first">
-				<el-row style="margin-bottom:20px;">
+				<el-row>
 					<el-button type="primary" icon="el-icon-edit" @click="centerDialogVisiblePlan = true">新建随访计划</el-button>
-					<el-button type="primary" @click="centerDialogVisibleRecord = true">随访</el-button>
 					<el-button v-if="information_form.manageStatus=='管理中'" type="primary" @click="centerDialogVisibleReferralOut = true">转出</el-button>
 					<el-button v-if="information_form.manageStatus=='向上转诊'||information_form.manageStatus=='向下转诊'" type="primary" @click="centerDialogVisibleReferralBack = true">转回</el-button>
 				</el-row>
@@ -100,14 +99,9 @@
 								<el-input v-model="information_form.targetDoctorName" readonly></el-input>
 							</el-form-item>
 						</el-col>
-						<el-col :span="4">
-							<el-form-item label="转诊状态">
-								<el-input v-model="$dict.referralStatus[information_form.status]" readonly></el-input>
-							</el-form-item>
-						</el-col>
 						<el-col :span="20">
 							<el-form-item label="转诊目的">
-								<el-input v-model="$dict.referralPurpose[information_form.referralPurpose]" readonly></el-input>
+								<el-input v-model="information_form.referralPurpose" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="20">
@@ -121,18 +115,20 @@
 			<el-tab-pane label="管理计划" name="second">
 				<div class="container">
 					<div class="manage-title">
-						<span class="bold-text">COPD一级管理计划</span>
+						<span class="bold-text">高血压一级管理计划</span>
 						（计划制定时间：2020-3-20 00:00:58，指定人：AI，调整计划）
 					</div>
 					<div class="manage-drug">
 						<el-col :span="4">用药指导：</el-col>
-						<el-col :span="20"><span class="bold-text">无</span></el-col>
+						<el-col :span="20"><span class="bold-text">ACEI和ARB.......</span></el-col>
 					</div>
 					<div class="manage-diet">
 						<el-col :span="4">饮食处方：</el-col>
 						<el-col :span="20">
 							<ul class="no-dot-container">
-								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
 							</ul>
 						</el-col>
 					</div>
@@ -140,7 +136,9 @@
 						<el-col :span="4">运动处方：</el-col>
 						<el-col :span="20">
 							<ul class="no-dot-container">
-								<li class="no-dot"><span class="bold-text">每日步行15min</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
 							</ul>
 						</el-col>
 					</div>
@@ -148,9 +146,9 @@
 						<el-col :span="4">自我检测：</el-col>
 						<el-col :span="20">
 							<ul class="no-dot-container">
-								<li class="no-dot"><span class="bold-text">每周测量一次PEF</span></li>
-								<li class="no-dot"><span class="bold-text">每两周填写一次HAD量表</span></li>
-								<li class="no-dot"><span class="bold-text">每周填写一次CAT量表</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
 							</ul>
 						</el-col>
 					</div>
@@ -158,9 +156,9 @@
 						<el-col :span="4">控制目标：</el-col>
 						<el-col :span="20">
 							<ul class="no-dot-container">
-								<li class="no-dot"><span class="bold-text">PEF/PEF预计值≥80%</span></li>
-								<li class="no-dot"><span class="bold-text">CAT评分≤10</span></li>
-								<li class="no-dot"><span class="bold-text">HAD焦虑得分/抑郁得分≤7</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
+								<li class="no-dot"><span class="bold-text">低盐低脂饮食，食盐摄入量<6g，.....</span></li>
 							</ul>
 						</el-col>
 					</div>
@@ -404,104 +402,6 @@
 		</span>
 	</el-dialog>
 	<el-dialog
-	  title="新建随访记录"
-	  :visible.sync="centerDialogVisibleRecord"
-	  width="60%"
-	  center>
-		<el-form ref="formRecord" :model="formRecord" label-width="80px">
-			<el-form-item label="随访方式">
-				<el-radio v-model="formRecord.followupMethod" label="门诊">门诊</el-radio>
-				<el-radio v-model="formRecord.followupMethod" label="家访">家访</el-radio>
-				<el-radio v-model="formRecord.followupMethod" label="电话">电话</el-radio>
-			</el-form-item>
-			<el-form-item label="随访结果">
-				<el-radio v-model="formRecord.status" label="0">失访</el-radio>
-				<el-radio v-model="formRecord.status" label="1" @change="form.failureReason=''">进行中</el-radio>
-				<el-radio v-model="formRecord.status" label="2" @change="form.failureReason=''">有效</el-radio>
-			</el-form-item>
-			<el-form-item label="随访类型">
-				<el-radio v-model="formRecord.followupType" label="常规随访">常规随访</el-radio>
-				<el-radio v-model="formRecord.followupType" label="预警干预">预警干预</el-radio>
-				<el-radio v-model="formRecord.followupType" :label="formRecord.otherFailureReason">其他</el-radio>
-				<el-input
-				  v-model="formRecord.otherFailureReason"
-				  size="medium"
-				  placeholder="请输入其他类型"
-				  :disabled="formRecord.followupType=='常规随访'||formRecord.followupType=='预警干预'"></el-input>
-			</el-form-item>
-			<el-form-item label="失访原因">
-				<el-input
-				  v-model="formRecord.failureReason"
-				  placeholder="请输入内容"
-				  :disabled="formRecord.status!=0"></el-input>
-			</el-form-item>
-			<el-form-item label="是否死亡">
-				<el-radio v-model="formRecord.death" :label="true">是</el-radio>
-				<el-radio v-model="formRecord.death" :label="false" @change="formRecord.deathTime=''">否</el-radio>
-			</el-form-item>
-			<el-form-item label="死亡时间">
-				<el-date-picker
-				  :disabled="!formRecord.death"
-				  v-model="formRecord.deathTime"
-				  type="datetime"
-				  placeholder="选择日期时间">
-				</el-date-picker>
-			</el-form-item>
-			<el-form-item label="生活质量">
-				<el-radio v-model="formRecord.content.liveQuality" label="良好" checked>良好</el-radio>
-				<el-radio v-model="formRecord.content.liveQuality" label="一般">一般</el-radio>
-				<el-radio v-model="formRecord.content.liveQuality" label="不佳">不佳</el-radio>
-			</el-form-item>
-			<el-form-item label="身体状况">
-				<el-radio v-model="formRecord.content.physicalCondition" label="良好" checked>良好</el-radio>
-				<el-radio v-model="formRecord.content.physicalCondition" label="一般">一般</el-radio>
-				<el-radio v-model="formRecord.content.physicalCondition" label="不佳">不佳</el-radio>
-			</el-form-item>
-			<el-form-item label="心理状况">
-				<el-radio v-model="formRecord.content.mentalCondition" label="良好" checked>良好</el-radio>
-				<el-radio v-model="formRecord.content.mentalCondition" label="一般">一般</el-radio>
-				<el-radio v-model="formRecord.content.mentalCondition" label="不佳">不佳</el-radio>
-			</el-form-item>
-			<el-form-item label="服药状况">
-				<el-radio v-model="formRecord.content.drugCondition" label="良好" checked>良好</el-radio>
-				<el-radio v-model="formRecord.content.drugCondition" label="一般">一般</el-radio>
-				<el-radio v-model="formRecord.content.drugCondition" label="不佳">不佳</el-radio>
-			</el-form-item>
-			<el-form-item label="有无急症">
-				<el-radio v-model="formRecord.content.hasAcuteSymptoms" :label='false' checked>无</el-radio>
-				<el-radio v-model="formRecord.content.hasAcuteSymptoms" :label='true'>有</el-radio>
-			</el-form-item>
-			<el-form-item label="急性症状">
-				<el-input
-					v-model="formRecord.content.acuteSypmtoms"
-					placeholder="请填写患者新增急性症状"
-					:disabled="formRecord.content.hasAcuteSymptoms===false"></el-input>
-			</el-form-item>
-			<el-form-item label="有无不适">
-				<el-radio v-model="formRecord.content.hasNewDiscomfort" :label='false' checked>无</el-radio>
-				<el-radio v-model="formRecord.content.hasNewDiscomfort" :label='true'>有</el-radio>
-			</el-form-item>
-			<el-form-item label="新增不适">
-				<el-input
-					v-model="formRecord.content.newDiscomfort"
-					placeholder="请填写患者新增不适症状"
-					:disabled="formRecord.content.hasNewDiscomfort===false"></el-input>
-			</el-form-item>
-			<el-form-item label="摘要记录">
-				<el-input
-				  type="textarea"
-				  autosize
-				  placeholder="请输入内容"
-				  v-model="formRecord.summary">
-				</el-input>
-			</el-form-item>
-		</el-form>
-		<span slot="footer" class="dialog-footer">
-			<el-button @click="centerDialogVisibleRecord = false">取 消</el-button>
-			<el-button type="primary" @click="submitCreateFollows">确 定</el-button>
-		</span>
-	</el-dialog>
-	<el-dialog
 	  title="申请转诊"
 	  :visible.sync="centerDialogVisibleReferralOut"
 	  width="60%"
@@ -534,29 +434,16 @@
 				  placeholder="请输入转诊原因"></el-input>
 			</el-form-item>
 			<el-form-item label="转诊机构">
-				<el-cascader
-					v-model="selectedDivison"
-					:options="divisionTree"
-					:props="{ expandTrigger: 'hover' }"
-					@change="getHospitalList"></el-cascader>
-				<el-select v-model="formReferralOut.orgCode" placeholder="请选择" @change="getDoctorList">
-					<el-option
-					  v-for="(hospital,index) in hospitalList"
-					  :key="index"
-					  :label="hospital.orgName"
-					  :value="hospital.orgCode">
-					</el-option>
-				</el-select>
+				<el-input
+				  v-model="formReferralOut.orgCode"
+				  size="medium"
+				  placeholder="请输入内容"></el-input>
 			</el-form-item>
 			<el-form-item label="转诊医生">
-				<el-select v-model="formReferralOut.doctorID" placeholder="请选择">
-					<el-option
-					  v-for="(doctor,index) in doctorList"
-					  :key="index"
-					  :label="doctor.name"
-					  :value="doctor.userID">
-					</el-option>
-				</el-select>
+				<el-input
+				  v-model="formReferralOut.doctorID"
+				  size="medium"
+				  placeholder="请输入内容"></el-input>
 			</el-form-item>
 		</el-form>
 		<span slot="footer" class="dialog-footer">
@@ -593,50 +480,19 @@
 	import Component from 'vue-class-component'
 	import BaseComponent from '../../components/BaseComponent'
 	import {getPatientBaseInfo,getPatientManageInfo,getPatientReferralInfo,getPatientWarningInfo,getPatientFollowingInfo,getPatientData,createReferralApply,createReferralBack} from '../../api/patientInfo'
-	import {createFollowPlan,createFollowRecord} from '../../api/followingPatientList'
-	import {fetchDivisionTree,fetchOrgList} from '../../api/orgDict'
-	import {getDoctorListOfAnyHos} from '../../api/doctorInfo'
+	import {createFollowPlan} from '../../api/followingPatientList'
 	import moment from 'moment';
 	@Component
 	export default class Warning extends BaseComponent {
 		activeName= 'first';
 		information_form={}
 		centerDialogVisiblePlan=false;
-		centerDialogVisibleRecord=false;
 		centerDialogVisibleReferralOut=false;
 		centerDialogVisibleReferralBack=false;
-
-		selectedDivison='';
-		divisionTree=[];
-		hospitalList=[];
-		doctorList=[];
-
-		tr_tableData = [];
-
 		formPlan={
 		  memo: '',
 		  followupType: '',
 		  planDate: ''
-		}
-		formRecord={
-		  followupMethod: '',
-		  status: '1',
-		  followupType: '',
-		  failureReason: '',
-		  death: false,
-		  deathTime: '',
-		  content: {
-			liveQuality: '良好',
-			physicalCondition: '良好',
-			mentalCondition: '良好',
-			drugCondition: '良好',
-			hasAcuteSymptoms: false,
-			acuteSymptoms: null,
-			hasNewDiscomfort: false,
-			newDiscomfort: null
-		  },
-		  otherFailureReason: '',
-		  summary: ''
 		}
 		formReferralOut={
 		  alertSerialNo: 0,
@@ -737,55 +593,8 @@
 				})
 			} 
 		}
-
-		getDivisonTree() {
-			fetchDivisionTree()
-			.then(res=>{
-				var stack = [].concat(res.data)
-				while(stack.length!=0){
-					var node = stack.pop()
-					node.value = node.divisionCode
-					node.label = node.divisionName
-					if(node.children){
-						stack.push(...node.children)
-						node.children.unshift({value: node.divisionCode, label: node.divisionName})
-					}
-				}
-				this.divisionTree=res.data
-			})
-			.catch(err=>{
-				this.err(err)
-			})
-		}
-
-		getHospitalList() {
-			if(this.selectedDivison==''){
-				this.error('请选择地区')
-				return
-			}
-			this.formReferralOut.orgCode=''
-			this.formReferralOut.doctorID=''
-			this.doctorList=[]
-			var divisionCode = this.selectedDivison[this.selectedDivison.length-1]
-			fetchOrgList({divisionCode: divisionCode})
-			.then(res=>{
-				this.hospitalList = res.data
-			})
-			.catch(err=>{
-				this.err(err)
-			})
-		}
-
-		getDoctorList() {
-			this.formReferralOut.doctorID=''
-			getDoctorListOfAnyHos({orgCode: this.formReferralOut.orgCode})
-			.then(res=>{
-				this.doctorList = res.data
-			})
-			.catch(err=>{
-				this.err(err)
-			})
-		}
+		
+		getReferral(){}
 		
 		transform(date){
 			return moment(date).format('YYYY-MM-DD');
@@ -865,40 +674,13 @@
 					new_information.manageLevel=this.$dict.manageLevel[new_information.manageLevel];
 				}
 				this.information_form = new_information;
-				// console.log(new_information);
+				//console.log(new_information);
 				return new_information;
 			  })
 			  .catch(err=>{
 			    console.log(err)
 			  })
 		}
-
-		submitCreateFollows(){
-	  		//console.log(this.formRecord,this.selectedPatientID,this.selectedPlanDate,this.selectedSerialNo);
-			createFollowRecord({
-			alertSerialNo: null,
-			content: JSON.stringify(this.formRecord.content),
-			deathTime: this.formRecord.deathTime,
-			executeDoctorID: this.$store.state.user.token,
-			failureReason: this.formRecord.failureReason,
-			followupMethod: this.formRecord.followupMethod,
-			followupType: this.formRecord.followupType,
-			patientID: this.information_form.userID,
-			planDate: null,
-			planSerialNo: null,
-			status: this.formRecord.status,
-			summary: this.formRecord.summary,
-			templateCode: 0})
-			.then(res=>{
-				this.success('提交成功')
-				this.centerDialogVisibleRecord = false;
-				this.getCount();
-				this.getAllList();
-			})
-			.catch(err=>{
-				this.error('提交失败')
-			})
-	    }
 		
 		submitCreateFollowPlan(){
 			createFollowPlan({
@@ -990,8 +772,8 @@
 			this.getInformation()
 			this.getWarning();
 			this.getFollowing();
+			this.getReferral();
 			this.getData();
-			this.getDivisonTree();
 		}
 	}
 </script>

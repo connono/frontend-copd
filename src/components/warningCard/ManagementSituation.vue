@@ -9,7 +9,7 @@
                 <div style="display: flex; align-items: center;">
                     <div v-if="data.manageClass.includes('高血压')">
                         <div class="row">
-                            <span class="item-label">管理等级：</span>
+                            <span class="item-label">高血压管理等级：</span>
                             <span >
                                 <div v-if="data.manageStatus === 0">
                                     <div v-if="data.ext">
@@ -102,7 +102,7 @@
             if(this.data.lastFollowupDate) {
                 result += "，上次随访：";
                 result += this.toDateText(this.data.lastFollowupDate.replace(/-/g,"/"));
-                result += this.getDaysText(-this.data.lastFollowupDays);
+                result += this.getDaysText(this.data.lastFollowupDays);
             }
 
             if(this.data.followupDate) {

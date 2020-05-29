@@ -5,15 +5,15 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
-      <div class="welcome-text">欢迎您</div>
-      <div>
-        <el-dropdown class="avatar-container" trigger="click">
-          <div class="avatar-wrapper">
-            <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-            <i class="el-icon-caret-bottom" />
-          </div>
-          <el-dropdown-menu slot="dropdown" class="user-dropdown">
-            <!--<router-link to="/">
+      <div class="welcome-text">XX医院的XX医生，欢迎您</div>
+	  <div>
+      <el-dropdown class="avatar-container" trigger="click">
+        <div class="avatar-wrapper">
+          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <i class="el-icon-caret-bottom" />
+        </div>
+        <el-dropdown-menu slot="dropdown" class="user-dropdown">
+          <!--<router-link to="/">
             <el-dropdown-item>
               Home
             </el-dropdown-item>
@@ -24,12 +24,12 @@
           <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
             <el-dropdown-item>Docs</el-dropdown-item>
           </a>-->
-            <el-dropdown-item>
-              <span style="display:block;" @click="logout">Log Out</span>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
+          <el-dropdown-item>
+            <span style="display:block;" @click="logout">Log Out</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+	  </div>
     </div>
   </div>
 </template>

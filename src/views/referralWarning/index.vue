@@ -74,11 +74,11 @@
 						</div>
 						<div class="right">
 							<div class="row">
-								<div v-if="item.manageItem.manageStatus!=9">
+								<div v-if="item.manageItem.manageStatus==0">
 									<div style="display: flex; align-items: center;">
 										<div v-if="item.manageItem.manageClass===0">
 											<div>
-												<span class="row">管理等级：</span>
+												<span class="row">高血压管理等级：</span>
 												<span v-if="item.manageItem.manageLevel==0">新患者</span>
 												<span v-else-if="item.manageItem.manageLevel==1">一级</span>
 												<div v-else-if="item.manageItem.manageLevel==2" style="display: inline-block; align-items: center;">
@@ -114,8 +114,8 @@
 							</div>
 							<div style="padding-top: 10px;">
 								<span>{{"已管理"+item.manageItem.manageDays+"天，共随访"+item.manageItem.followupTimes+"次"}}</span>
-								<span v-if="item.manageItem.lastFollowupDate!=null">{{"，上次随访："+toDateText(item.manageItem.lastFollowupDate.replace(/-/g,"/"))+getDaysText(-item.manageItem.lastFollowupDays)}}</span>
-								<!-- <span v-if="item.manageItem.followupDate!=null">{{"，计划随访："+toDateText(item.manageItem.followupDate.replace(/-/g,"/"))+getDaysText(item.manageItem.followupDays)}}</span> -->
+								<span v-if="item.manageItem.lastFollowupDate!=null">{{"，上次随访："+toDateText(item.manageItem.lastFollowupDate.replace(/-/g,"/"))+getDaysText(item.manageItem.lastFollowupDays)}}</span>
+								<span v-if="item.manageItem.followupDate!=null">{{"，计划随访："+toDateText(item.manageItem.followupDate.replace(/-/g,"/"))+getDaysText(item.manageItem.followupDays)}}</span>
 							</div>
 							<div class="btn">
 								<el-button size="medium" type="primary" @click="openCreateFollowRecord(item.patientID,item.alertItemList)">立即干预</el-button>
@@ -162,52 +162,12 @@
 											  placeholder="选择日期时间">
 											</el-date-picker>
 										</el-form-item>
-										<el-form-item label="生活质量">
-											<el-radio v-model="form.content.liveQuality" label="良好" checked>良好</el-radio>
-											<el-radio v-model="form.content.liveQuality" label="一般">一般</el-radio>
-											<el-radio v-model="form.content.liveQuality" label="不佳">不佳</el-radio>
-										</el-form-item>
-										<el-form-item label="身体状况">
-											<el-radio v-model="form.content.physicalCondition" label="良好" checked>良好</el-radio>
-											<el-radio v-model="form.content.physicalCondition" label="一般">一般</el-radio>
-											<el-radio v-model="form.content.physicalCondition" label="不佳">不佳</el-radio>
-										</el-form-item>
-										<el-form-item label="心理状况">
-											<el-radio v-model="form.content.mentalCondition" label="良好" checked>良好</el-radio>
-											<el-radio v-model="form.content.mentalCondition" label="一般">一般</el-radio>
-											<el-radio v-model="form.content.mentalCondition" label="不佳">不佳</el-radio>
-										</el-form-item>
-										<el-form-item label="服药状况">
-											<el-radio v-model="form.content.drugCondition" label="良好" checked>良好</el-radio>
-											<el-radio v-model="form.content.drugCondition" label="一般">一般</el-radio>
-											<el-radio v-model="form.content.drugCondition" label="不佳">不佳</el-radio>
-										</el-form-item>
-										<el-form-item label="有无急症">
-											<el-radio v-model="form.content.hasAcuteSymptoms" :label='false' checked>无</el-radio>
-											<el-radio v-model="form.content.hasAcuteSymptoms" :label='true'>有</el-radio>
-										</el-form-item>
-										<el-form-item label="急性症状">
-											<el-input
-											  v-model="form.content.acuteSypmtoms"
-											  placeholder="请填写患者新增急性症状"
-											  :disabled="form.content.hasAcuteSymptoms===false"></el-input>
-										</el-form-item>
-										<el-form-item label="有无不适">
-											<el-radio v-model="form.content.hasNewDiscomfort" :label='false' checked>无</el-radio>
-											<el-radio v-model="form.content.hasNewDiscomfort" :label='true'>有</el-radio>
-										</el-form-item>
-										<el-form-item label="新增不适">
-											<el-input
-											  v-model="form.content.newDiscomfort"
-											  placeholder="请填写患者新增不适症状"
-											  :disabled="form.content.hasNewDiscomfort===false"></el-input>
-										</el-form-item>
 										<el-form-item label="摘要记录">
 											<el-input
 											  type="textarea"
 											  autosize
 											  placeholder="请输入内容"
-											  v-model="form.summary">
+											  v-model="form.content">
 											</el-input>
 										</el-form-item>
 										
@@ -285,18 +245,8 @@
 		failureReason: '',
 		death: false,
 		deathTime: '',
-		content: {
-			liveQuality: '良好',
-			physicalCondition: '良好',
-			mentalCondition: '良好',
-			drugCondition: '良好',
-			hasAcuteSymptoms: false,
-			acuteSymptoms: null,
-			hasNewDiscomfort: false,
-			newDiscomfort: null
-		},
+		content: '',
 		otherFailureReason: '',
-		summary: ''
 	  }
 	  selectedPatientID=''
 	  selectedAlertItems=[]
@@ -369,7 +319,7 @@
 			planDate += 'Z';
 			return this.P_create(createFollowRecord,{
 			  alertSerialNo: item.serialNo,
-			  content: JSON.stringify(this.form.content),
+			  content: this.form.content,
 			  deathTime: this.form.deathTime,
 			  executeDoctorID: this.$store.state.user.token,
 			  failureReason: this.form.failureReason,

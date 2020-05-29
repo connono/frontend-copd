@@ -139,7 +139,7 @@
 	import BaseComponent from '../../components/BaseComponent'
 	import Star from '../../components/graphic/Star'
 	import {getCorrectPatientList,approve,refuse} from '../../api/correctPatient'
-	import {getDoctorInfo,getDoctorName} from '../../api/doctorInfo'
+	import {getDoctorInfo} from '../../api/doctorInfo'
 	
 	@Component({
 		components:{
@@ -151,10 +151,7 @@
 		currentPage = 1;
 		pageSize = 15;
 		totalPatient = 0;
-		doctorList=[{
-			userID: this.$store.state.user.token,
-			name: ''
-		}];
+		doctorList=[];
 		selectedDoctor='';
 		refuseReason='';
 		
@@ -186,26 +183,16 @@
 		}
 		
 		getDoctorList(){
-			if(this.$store.state.user.auth==1){
-				getDoctorInfo({hospitalID: this.$store.state.user.token})
-				.then(response=>{
-					//console.log(response);
-					this.doctorList = response.data;
-					//console.log(this.doctorList);
-					
-				})
-				.catch(err=>{
-					console.log(err);
-				})
-			} else {
-				getDoctorName({doctorID: this.$store.state.user.token})
-				.then(response=>{
-					this.doctorList[0].name = response.data
-				})
-				.catch(err=>{
-					console.log(err)
-				})
-			}
+			getDoctorInfo({hospitalID: this.$store.state.user.token})
+			  .then(response=>{
+				//console.log(response);
+				this.doctorList = response.data;
+				//console.log(this.doctorList);
+				
+			  })
+			  .catch(err=>{
+			    console.log(err);
+			  })
 		}
 		
 		handleSizeChange(val){
