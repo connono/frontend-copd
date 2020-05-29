@@ -5,10 +5,10 @@
 		<div style="display: inline-block; float: right">
 			<span>管理状态：</span>
 			<el-select v-model="selectedType" placeholder="全部" @change="handleSelect">
-				<el-option label="全部" value="0"></el-option>
-				<el-option label="管理中" value="1"></el-option>
-				<el-option label="转出" value="2"></el-option>
-				<el-option label="转入" value="3"></el-option>
+				<el-option label="全部" :value="0"></el-option>
+				<el-option label="管理中" :value="1"></el-option>
+				<el-option label="转出" :value="2"></el-option>
+				<el-option label="转入" :value="3"></el-option>
 			</el-select>
 		</div>
 	</div>
@@ -120,7 +120,7 @@
 		};
 		totalElements = 0;
 		pageSize = 15;
-		selectedType='';
+		selectedType=0;
 		
 		handleSizeChange(val){
 			this.pageSize = val;

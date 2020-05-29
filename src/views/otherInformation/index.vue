@@ -13,10 +13,10 @@
 		<div style="display: inline-block; float: right">
 			<span>管理状态：</span>
 			<el-select v-model="selectedType" placeholder="全部" @change="doList">
-				<el-option label="全部" value="0"></el-option>
-				<el-option label="管理中" value="1"></el-option>
-				<el-option label="转出" value="2"></el-option>
-				<el-option label="转入" value="3"></el-option>
+				<el-option label="全部" :value="0"></el-option>
+				<el-option label="管理中" :value="1"></el-option>
+				<el-option label="转出" :value="2"></el-option>
+				<el-option label="转入" :value="3"></el-option>
 			</el-select>
 		</div>
 	</div>
@@ -127,7 +127,7 @@
 		};
 		totalElements = 0;
 		pageSize = 15;
-		selectedType='';
+		selectedType=0;
 		selectedHospital='';
 		
 		subhospitalTree=[]
@@ -159,11 +159,10 @@
 				return;
 			}
 			var orgCode = this.selectedHospital[this.selectedHospital.length-1];
-			var selectedType = (this.selectedType=='')?0:this.selectedType;
 			getPatientCount({orgCode: orgCode})
 			  .then(response=>{
 			    this.patientCount = response.data;
-				getPatientList({orgCode: orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: selectedType})
+				getPatientList({orgCode: orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: this.selectedType})
 				  .then(response=>{
 					this.tableData = response.data.content;
 					this.totalElements = response.data.totalElements;
