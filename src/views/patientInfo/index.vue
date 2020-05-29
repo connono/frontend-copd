@@ -234,17 +234,17 @@
 						</template>
 					</el-table-column>
 					<el-table-column
-						prop="followingType"
+						prop="followupType"
 						label="类型"
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="way"
+						prop="followupMethod"
 						label="方式"
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="result"
+						prop="status"
 						label="结果"
 						width="180">
 					</el-table-column>
@@ -612,7 +612,8 @@
 					  v-for="(hospital,index) in hospitalList"
 					  :key="index"
 					  :label="hospital.orgName"
-					  :value="hospital.orgCode">
+					  :value="hospital.orgCode"
+					  :disabled="hospital.orgCode==$store.state.user.orgCode">
 					</el-option>
 				</el-select>
 			</el-form-item>
@@ -878,8 +879,10 @@
 		getFollowing(){
 			getPatientFollowingInfo({patientID: this.$route.params.patientID, pageIndex: this.currentPageWarning, pageOffset: this.pageSizeWarning})
 			  .then(response=>{
-			    console.log(response)
 				this.following_tableData = response.data.content;
+				this.following_tableData.forEach(element=>{
+					element.status = this.$dict.followupRecordStatus[element.status]
+				})
 				this.followingCount = response.data.totalElements;
 			  })
 			  .catch(err=>{

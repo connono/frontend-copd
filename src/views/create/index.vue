@@ -47,10 +47,16 @@
 			  <el-input v-model="form.profession"></el-input>
 			</el-form-item>
 			<el-form-item label="关联机构">
-			  <el-input v-model="form.hospitalName"></el-input>
+			  <el-input :value="orgName" disabled></el-input>
 			</el-form-item>
 			<el-form-item label="管理医生">
-			  <el-input v-model="form.doctorName"></el-input>
+				<el-select v-model="form.doctorID" placeholder="请选择">
+					<el-option
+						v-for="doctor in doctorList"
+						:key="doctor.userID"
+						:label="doctor.name"
+						:value="doctor.userID"></el-option>
+			  	</el-select>
 			</el-form-item>
 			<el-form-item label="账号">
 			  <el-input v-model="form.userName"></el-input>
@@ -69,92 +75,91 @@
 	  :data="tableData"
 	  stripe
 	  cell-style="font-size:16px; text-align: center;"
-	  header-cell-style="font-size: 18px; text-align: center;"
-	>
-	  <el-table-column
-	    fixed
-		prop="name"
-		label="姓名"
-		width="90">
-	  </el-table-column>
-	  <el-table-column
-		label="性别"
-		width="70">
-		<template slot-scope="scope">
-			<div style="display: inline-block">
-				{{scope.row.sex==1?'男':'女'}}
-			</div>
-		</template>
-	  </el-table-column>
-	  <el-table-column
-		label="年龄"
-		width="70">
-		<template slot-scope="scope">
-			<div style="display: inline-block">
-				{{dateToAge(scope.row.dateOfBirth)}}
-			</div>
-		</template>
-	  </el-table-column>
-	  <el-table-column
-		prop="education"
-		label="学历"
-		width="100">
-	  </el-table-column>
-	  <el-table-column
-	    prop="profession"
-		label="职业"
-		width="80">
-	  </el-table-column>
-	  <el-table-column
-		prop="height"
-		label="身高(cm)"
-		width="100">
-	  </el-table-column>
-	  <el-table-column
-		prop="weight"
-		label="体重(kg)"
-		width="100">
-	  </el-table-column>
-	  <el-table-column
-		prop="phone"
-		label="手机"
-		width="180">
-	  </el-table-column>
-	  <el-table-column
-		prop="registerDateTime"
-		label="注册时间"
-		width="180">
-	  </el-table-column>
-	  <el-table-column
-	    fixed="right"
-		label="操作"
-		width="150">
-		<template slot-scope="scope">
-		  <el-popover
-			placement="bottom-start"
-			width="200"
-			trigger="click"
-			>
-			<div>
-				<p>请选择接收医生：</p>
-				<div style="display: flex">
-					<el-select v-model="selectedDoctor" placeholder="请选择">
-						<el-option
-							v-for="doctor in doctorList"
-							:key="doctor.userID"
-							:label="doctor.name"
-							:value="doctor.userID">
-						</el-option>
-					</el-select>
-					<el-button @click="handleClick(scope.row, 'check')" size="medium">确认</el-button>
+	  header-cell-style="font-size: 18px; text-align: center;">
+		<el-table-column
+			fixed
+			prop="name"
+			label="姓名"
+			width="90">
+		</el-table-column>
+		<el-table-column
+			label="性别"
+			width="70">
+			<template slot-scope="scope">
+				<div style="display: inline-block">
+					{{scope.row.sex==1?'男':'女'}}
 				</div>
-			</div>
-			<el-button type="text" size="medium" slot="reference">接收</el-button>
-		  </el-popover>
-		  <el-button @click="handleClick(scope.row, 'refuse')" type="text" size="medium">拒绝</el-button>
-		  <el-button @click="handleClick(scope.row, 'ignore')" type="text" size="medium">忽略</el-button>
-		</template>
-	  </el-table-column>
+			</template>
+		</el-table-column>
+		<el-table-column
+			label="年龄"
+			width="70">
+			<template slot-scope="scope">
+				<div style="display: inline-block">
+					{{dateToAge(scope.row.dateOfBirth)}}
+				</div>
+			</template>
+		</el-table-column>
+		<el-table-column
+			prop="education"
+			label="学历"
+			width="100">
+		</el-table-column>
+		<el-table-column
+			prop="profession"
+			label="职业"
+			width="80">
+		</el-table-column>
+		<el-table-column
+			prop="height"
+			label="身高(cm)"
+			width="100">
+		</el-table-column>
+		<el-table-column
+			prop="weight"
+			label="体重(kg)"
+			width="100">
+		</el-table-column>
+		<el-table-column
+			prop="phone"
+			label="手机"
+			width="180">
+		</el-table-column>
+		<el-table-column
+			prop="registerDateTime"
+			label="注册时间"
+			width="180">
+		</el-table-column>
+		<el-table-column
+			fixed="right"
+			label="操作"
+			width="150">
+			<template slot-scope="scope">
+			<el-popover
+				placement="bottom-start"
+				width="200"
+				trigger="click"
+				>
+				<div>
+					<p>请选择接收医生：</p>
+					<div style="display: flex">
+						<el-select v-model="selectedDoctor" placeholder="请选择">
+							<el-option
+								v-for="doctor in doctorList"
+								:key="doctor.userID"
+								:label="doctor.name"
+								:value="doctor.userID">
+							</el-option>
+						</el-select>
+						<el-button @click="handleClick(scope.row, 'check')" size="medium">确认</el-button>
+					</div>
+				</div>
+				<el-button type="text" size="medium" slot="reference">接收</el-button>
+			</el-popover>
+			<el-button @click="handleClick(scope.row, 'refuse')" type="text" size="medium">拒绝</el-button>
+			<el-button @click="handleClick(scope.row, 'ignore')" type="text" size="medium">忽略</el-button>
+			</template>
+		</el-table-column>
 	</el-table>
 	<el-pagination
 		@size-change="handleSizeChange"
@@ -172,7 +177,8 @@
 	import Component from 'vue-class-component'
 	import BaseComponent from '../../components/BaseComponent'
 	import {getCreatePatient, createPatient, checkPatient} from '../../api/createPatient'
-	import {getDoctorInfo} from '../../api/doctorInfo'
+	import {getDoctorInfo,getDoctorName} from '../../api/doctorInfo'
+	import {getOrgName} from '../../api/orgDict'
 	
 	@Component
 	export default class Information extends BaseComponent {
@@ -183,6 +189,7 @@
 		totalPatient = 0;
 	    LoadingText = "刷新";
 		centerDialogVisible = false;
+		orgName = '';
 		doctorList = [{
 			userID: this.$store.state.user.token,
 			name: ''
@@ -191,21 +198,31 @@
 		form = {
 			address: null,
   			dateOfBirth: "",
-  			doctorID: 0,
+  			doctorID: '',
   			education: null,
   			email: null,
   			height: 0,
   			identityCardNumber: null,
   			mobilePhone: null,
   			name: "",
-  			orgCode: "",
-  			password: "string",
+  			orgCode: this.$store.state.user.orgCode,
+  			password: "",
   			patientFeature: null,
   			profession: null,
   			sex: 0,
   			userName: "",
   			weChat: null,
   			weight: 0
+		}
+
+		handleSizeChange(val) {
+			this.pageSize = val;
+			this.doList();
+		}
+
+		handleCurrentChange(val) {
+			this.currentPage = val;
+			this.doList();
 		}
 		
 		submitCreatePatient(){
@@ -245,7 +262,7 @@
 					console.log(err);
 				})
 			}else if(type==="refuse"){
-				checkPatient({doctorID: 0, refuseReason: '', reviewerID: this.$store.state.user.token, serialNo: row.serialNo, status: 2}).then(response=>{
+				checkPatient({doctorID: null, refuseReason: '', reviewerID: this.$store.state.user.token, serialNo: row.serialNo, status: 2}).then(response=>{
 					if(response.message==="success")
 						this.success('拒绝成功！')
 					this.doList();
@@ -253,7 +270,7 @@
 					console.log(err);
 				})
 			}else if(type==="ignore"){
-				checkPatient({doctorID: 0, refuseReason: '', reviewerID: this.$store.state.user.token, serialNo: row.serialNo, status: 3}).then(response=>{
+				checkPatient({doctorID: null, refuseReason: '', reviewerID: this.$store.state.user.token, serialNo: row.serialNo, status: 3}).then(response=>{
 					if(response.message==="success")
 						this.success('忽略成功！')
 					this.doList();
@@ -297,11 +314,22 @@
 					this.error('获取失败')
 				})
 		}
+
+		getThisOrgName(){
+			getOrgName({orgCode: this.$store.state.user.orgCode})
+			.then(res=>{
+				this.orgName = res.data
+			})
+			.catch(err=>{
+				this.error('获取失败')
+			})
+		}
 		
 		mounted(){
 			this.$emit("activeChanged",0);
 			this.getDoctorList();
 			this.doList();
+			this.getThisOrgName();
 		}
 	}
 </script>
