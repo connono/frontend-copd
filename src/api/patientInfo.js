@@ -40,6 +40,14 @@ export function getPatientFollowingInfo(data) {
   })
 }
 
+export function getPatientReferralHistory(data) {
+  return request({
+    url: 'http://localhost:18908/user/patient/history/referral/page',
+    method: 'get',
+    params: data
+  })
+}
+
 export function getPatientData(data) {
   return request({
     url: 'http://localhost:18908/data/fetch/list',

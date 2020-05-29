@@ -216,7 +216,7 @@
 					:page-sizes="[15,30,45,60]"
 					:page-size="pageSizeWarning"
 					layout="total, sizes, prev, pager, next, jumper"
-					:total="WarningCount">
+					:total="warningCount">
 				</el-pagination>
 			</el-tab-pane>
 			<el-tab-pane label="随访记录" name="fifth">
@@ -268,43 +268,82 @@
 					:total="followingCount">
 				</el-pagination>
 			</el-tab-pane>
-			<el-tab-pane label="评估记录" name="sixth">评估记录</el-tab-pane>
-			<el-tab-pane label="转诊历史" name="seventh">
+			<el-tab-pane label="评估记录" name="sixth">
+				<div>
+					<div style="display: inline-block; float: right">
+						<span>请选择日期</span>
+						<el-date-picker
+						  style="margin-left: 20px"
+						  v-model="selectDate"
+						  type="daterange"
+						  range-separator="至"
+						  start-placeholder="开始日期"
+						  end-placeholder="结束日期"
+						  value-format="yyyy/MM/dd"
+						  @blur="handleDateChange">
+						</el-date-picker>
+					</div>
+				</div>
 				<el-table
-					:data="tr_tableData"
+					:data="eva_tableData"
 					stripe
 					style="width: 100%">
 					<el-table-column
-						prop="start_date"
+						label="评估时间"
+						prop="recordTime"
+						width="180">
+					</el-table-column>
+					<el-table-column
+						prop="value"
+						label="得分"
+						width="180">
+					</el-table-column>
+					<el-table-column
+						prop="memo"
+						label="备注">
+					</el-table-column>
+				</el-table>
+			</el-tab-pane>
+			<el-tab-pane label="转诊历史" name="seventh">
+				<el-table
+					:data="referral_tableData"
+					stripe
+					style="width: 100%">
+					<el-table-column
+						prop="startDateTime"
 						label="开始时间"
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="end_date"
+						prop="endDateTime"
 						label="结束时间"
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="state"
+						prop="status"
 						label="转诊状态"
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="target"
+						prop="referralPurpose"
 						label="转诊目的"
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="reason"
+						prop="referralReason"
 						label="转诊原因"
 						width="180">
 					</el-table-column>
-					<el-table-column
-						prop="action"
-						label="操作"
-						width="180">
-					</el-table-column>
 				</el-table>
+				<el-pagination
+					@size-change="handleSizeChangeReferral"
+					@current-change="handleCurrentChangeReferral"
+					:current-page="currentPageReferral"
+					:page-sizes="[15,30,45,60]"
+					:page-size="pageSizeReferral"
+					layout="total, sizes, prev, pager, next, jumper"
+					:total="referralCount">
+				</el-pagination>
 			</el-tab-pane>
 			<el-tab-pane label="用药记录" name="eighth">
 				<div>
@@ -351,13 +390,42 @@
 						label="备注">
 					</el-table-column>
 				</el-table>
-				<el-pagination
-					:current-page="1"
-					:page-sizes="[15,30,45,60]"
-					:page-size="15"
-					layout="total, sizes, prev, pager, next, jumper"
-					:total="drug_tableData.length">
-				</el-pagination>
+			</el-tab-pane>
+			<el-tab-pane label="不适记录" name="ninth">
+				<div>
+					<div style="display: inline-block; float: right">
+						<span>请选择日期</span>
+						<el-date-picker
+						  style="margin-left: 20px"
+						  v-model="selectDate"
+						  type="daterange"
+						  range-separator="至"
+						  start-placeholder="开始日期"
+						  end-placeholder="结束日期"
+						  value-format="yyyy/MM/dd"
+						  @blur="handleDateChange">
+						</el-date-picker>
+					</div>
+				</div>
+				<el-table
+					:data="dis_tableData"
+					stripe
+					style="width: 100%">
+					<el-table-column
+						label="不适产生时间"
+						prop="recordTime"
+						width="180">
+					</el-table-column>
+					<el-table-column
+						prop="symptom"
+						label="症状"
+						width="180">
+					</el-table-column>
+					<el-table-column
+						prop="memo"
+						label="备注">
+					</el-table-column>
+				</el-table>
 			</el-tab-pane>
 		</el-tabs>
 	</div>
@@ -592,7 +660,7 @@
 <script>
 	import Component from 'vue-class-component'
 	import BaseComponent from '../../components/BaseComponent'
-	import {getPatientBaseInfo,getPatientManageInfo,getPatientReferralInfo,getPatientWarningInfo,getPatientFollowingInfo,getPatientData,createReferralApply,createReferralBack} from '../../api/patientInfo'
+	import {getPatientBaseInfo,getPatientManageInfo,getPatientReferralInfo,getPatientWarningInfo,getPatientFollowingInfo,getPatientReferralHistory,getPatientData,createReferralApply,createReferralBack} from '../../api/patientInfo'
 	import {createFollowPlan,createFollowRecord} from '../../api/followingPatientList'
 	import {fetchDivisionTree,fetchOrgList} from '../../api/orgDict'
 	import {getDoctorListOfAnyHos} from '../../api/doctorInfo'
@@ -610,8 +678,6 @@
 		divisionTree=[];
 		hospitalList=[];
 		doctorList=[];
-
-		tr_tableData = [];
 
 		formPlan={
 		  memo: '',
@@ -653,12 +719,17 @@
 		warning_tableData=[];
 		currentPageWarning=1;
 		pageSizeWarning=15;
-		WarningCount=0;
+		warningCount=0;
 		
 		following_tableData=[];
 		currentPageFollowing=1;
 		pageSizeFollowing=15;
 		followingCount=0;
+
+		referral_tableData = [];
+		currentPageReferral=1;
+		pageSizeReferral=15;
+		referralCount=0;
 		
 		patientData = {
 		  CAT: [],
@@ -671,7 +742,9 @@
 		
 		eChartsData=[];
 		
-		drug_tableData = []
+		drug_tableData = [];
+		eva_tableData=[];
+		dis_tableData=[];
 		selectDate=[];
 		
 		
@@ -834,6 +907,32 @@
 				console.log(err);
 			  })
 		}
+
+		handleSizeChangeReferral(val){
+			this.pageSizeReferral=val;
+			this.getReferral();
+		}
+
+		handleCurrentChangeReferral(val){
+			this.currentPageReferral=val;
+			this.getReferral();
+		}
+
+		getReferral(){
+			getPatientReferralHistory({patientID: this.$route.params.patientID, pageIndex: this.currentPageReferral, pageOffset: this.pageSizeReferral})
+			.then(response=>{
+				var newData = response.data.content
+				newData.forEach(element=>{
+					element.referralPurpose = this.$dict.referralPurpose[element.referralPurpose]
+					element.status = this.$dict.referralStatus[element.status]
+				})
+				this.referral_tableData = newData
+				this.referralCount = response.data.totalElements
+			})
+			.catch(err=>{
+				console.log(err);
+			})
+		}
 		
 		P_getInfo = function(func,data){
 			return new Promise((resolve, reject)=>{
@@ -965,7 +1064,7 @@
 			    this.patientData.CAT = result[0];
 			    this.patientData.HAD_Anxiety = result[1].map((item)=>{item.value=item.anxiety;return item;});
 			    this.patientData.HAD_Depression = result[1].map((item)=>{item.value=item.depression;return item;});
-			    this.patientData.PEF = result[2];
+				this.patientData.PEF = result[2];
 			    this.patientData.WEI = result[6];
 			    this.patientData.SMW = result[7];
 			  })
@@ -982,6 +1081,20 @@
 			  .catch(err=>{
 				console.log(err);
 			  })
+			getPatientData({endDate: this.selectDate[1], patientID: this.$route.params.patientID, startDate: this.selectDate[0], type: 5})
+			  .then(res=>{
+				this.dis_tableData = res.data;
+			  })
+			  .catch(err=>{
+				console.log(err);
+			  })
+			getPatientData({endDate: this.selectDate[1], patientID: this.$route.params.patientID, startDate: this.selectDate[0], type: 6})
+			  .then(res=>{
+				this.eva_tableData = res.data;
+			  })
+			  .catch(err=>{
+				console.log(err);
+			  })
 		}
 		
 		mounted(){
@@ -990,6 +1103,7 @@
 			this.getInformation()
 			this.getWarning();
 			this.getFollowing();
+			this.getReferral();
 			this.getData();
 			this.getDivisonTree();
 		}
