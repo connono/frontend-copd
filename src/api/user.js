@@ -4,14 +4,14 @@ export function login(data) {
   return request({
     url: 'http://localhost:18908/auth/login',
     method: 'post',
-	headers: {
-	  'Content-Type': "application/x-www-form-urlencoded;charset=utf-8"
+    headers: {
+	  'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
     },
-    data,
+    data
   })
 }
 
-/*export function getInfo(token) {
+/* export function getInfo(token) {
   return request({
     url: '/user/info',
     method: 'get',
@@ -26,10 +26,10 @@ export function logout() {
   })
 }
 
-export function getPatientList(data){
-	return request({
+export function getPatientList(data) {
+  return request({
 	  url: 'http://localhost:18908/manage/index/patient/namelist',
 	  method: 'get',
 	  params: data
-	})
+  })
 }

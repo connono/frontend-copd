@@ -200,7 +200,8 @@
 				<el-input
 				  v-model="formRecord.otherFailureReason"
 				  size="medium"
-				  placeholder="请输入其他类型"></el-input>
+				  placeholder="请输入其他类型"
+				  :disabled="formRecord.followupType=='常规随访'||formRecord.followupType=='预警干预'"></el-input>
 			</el-form-item>
 			<el-form-item label="失访原因">
 				<el-input
@@ -220,12 +221,52 @@
 				  placeholder="选择日期时间">
 				</el-date-picker>
 			</el-form-item>
+			<el-form-item label="生活质量">
+				<el-radio v-model="formRecord.content.liveQuality" label="良好" checked>良好</el-radio>
+				<el-radio v-model="formRecord.content.liveQuality" label="一般">一般</el-radio>
+				<el-radio v-model="formRecord.content.liveQuality" label="不佳">不佳</el-radio>
+			</el-form-item>
+			<el-form-item label="身体状况">
+				<el-radio v-model="formRecord.content.physicalCondition" label="良好" checked>良好</el-radio>
+				<el-radio v-model="formRecord.content.physicalCondition" label="一般">一般</el-radio>
+				<el-radio v-model="formRecord.content.physicalCondition" label="不佳">不佳</el-radio>
+			</el-form-item>
+			<el-form-item label="心理状况">
+				<el-radio v-model="formRecord.content.mentalCondition" label="良好" checked>良好</el-radio>
+				<el-radio v-model="formRecord.content.mentalCondition" label="一般">一般</el-radio>
+				<el-radio v-model="formRecord.content.mentalCondition" label="不佳">不佳</el-radio>
+			</el-form-item>
+			<el-form-item label="服药状况">
+				<el-radio v-model="formRecord.content.drugCondition" label="良好" checked>良好</el-radio>
+				<el-radio v-model="formRecord.content.drugCondition" label="一般">一般</el-radio>
+				<el-radio v-model="formRecord.content.drugCondition" label="不佳">不佳</el-radio>
+			</el-form-item>
+			<el-form-item label="有无急症">
+				<el-radio v-model="formRecord.content.hasAcuteSymptoms" :label='false' checked>无</el-radio>
+				<el-radio v-model="formRecord.content.hasAcuteSymptoms" :label='true'>有</el-radio>
+			</el-form-item>
+			<el-form-item label="急性症状">
+				<el-input
+					v-model="formRecord.content.acuteSypmtoms"
+					placeholder="请填写患者新增急性症状"
+					:disabled="formRecord.content.hasAcuteSymptoms===false"></el-input>
+			</el-form-item>
+			<el-form-item label="有无不适">
+				<el-radio v-model="formRecord.content.hasNewDiscomfort" :label='false' checked>无</el-radio>
+				<el-radio v-model="formRecord.content.hasNewDiscomfort" :label='true'>有</el-radio>
+			</el-form-item>
+			<el-form-item label="新增不适">
+				<el-input
+					v-model="formRecord.content.newDiscomfort"
+					placeholder="请填写患者新增不适症状"
+					:disabled="formRecord.content.hasNewDiscomfort===false"></el-input>
+			</el-form-item>
 			<el-form-item label="摘要记录">
 				<el-input
 				  type="textarea"
 				  autosize
 				  placeholder="请输入内容"
-				  v-model="formRecord.content">
+				  v-model="formRecord.summary">
 				</el-input>
 			</el-form-item>
 		</el-form>
@@ -326,8 +367,18 @@
 		  failureReason: '',
 		  death: false,
 		  deathTime: '',
-		  content: '',
+		  content: {
+			liveQuality: '良好',
+			physicalCondition: '良好',
+			mentalCondition: '良好',
+			drugCondition: '良好',
+			hasAcuteSymptoms: false,
+			acuteSymptoms: null,
+			hasNewDiscomfort: false,
+			newDiscomfort: null
+		  },
 		  otherFailureReason: '',
+		  summary: ''
 		}
 		
 		formSelected={}
@@ -450,8 +501,8 @@
 		var planDate = this.selectedPlanDate.replace(' ','T');
 		planDate += 'Z';
 		createFollowRecord({
-		  alertSerialNo: '',
-		  content: this.formRecord.content,
+		  alertSerialNo: null,
+		  content: JSON.stringify(this.formRecord.content),
 		  deathTime: this.formRecord.deathTime,
 		  executeDoctorID: this.$store.state.user.token,
 		  failureReason: this.formRecord.failureReason,
