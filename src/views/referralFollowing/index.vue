@@ -523,7 +523,7 @@
 		
 		mounted(){
 			var patientList = JSON.parse(localStorage.getItem('patientList'));
-			this.patientList = [].concat(patientList[0],patientList[2]);
+			this.patientList = [].concat(patientList[2]);
 			console.log("patientList:", patientList)
 			this.$emit("activeChanged",0)
 			this.getCount();

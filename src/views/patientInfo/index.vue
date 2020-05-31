@@ -484,8 +484,8 @@
 			</el-form-item>
 			<el-form-item label="随访结果">
 				<el-radio v-model="formRecord.status" label="0">失访</el-radio>
-				<el-radio v-model="formRecord.status" label="1" @change="form.failureReason=''">进行中</el-radio>
-				<el-radio v-model="formRecord.status" label="2" @change="form.failureReason=''">有效</el-radio>
+				<el-radio v-model="formRecord.status" label="1" @change="form.failureReason=null">进行中</el-radio>
+				<el-radio v-model="formRecord.status" label="2" @change="form.failureReason=null">有效</el-radio>
 			</el-form-item>
 			<el-form-item label="随访类型">
 				<el-radio v-model="formRecord.followupType" label="常规随访">常规随访</el-radio>
@@ -681,17 +681,17 @@
 		doctorList=[];
 
 		formPlan={
-		  memo: '',
+		  memo: null,
 		  followupType: '',
 		  planDate: ''
 		}
 		formRecord={
 		  followupMethod: '',
 		  status: '1',
-		  followupType: '',
-		  failureReason: '',
+		  followupType: '常规随访',
+		  failureReason: null,
 		  death: false,
-		  deathTime: '',
+		  deathTime: null,
 		  content: {
 			liveQuality: '良好',
 			physicalCondition: '良好',
@@ -703,10 +703,10 @@
 			newDiscomfort: null
 		  },
 		  otherFailureReason: '',
-		  summary: ''
+		  summary: null
 		}
 		formReferralOut={
-		  alertSerialNo: 0,
+		  alertSerialNo: null,
 		  doctorID: '',
 		  orgCode: '',
 		  referralPurpose: '',
@@ -714,7 +714,7 @@
 		  referralType: ''
 		}
 		formReferralBack={
-			receipt: ''
+			receipt: null
 		}
 		
 		warning_tableData=[];

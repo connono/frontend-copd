@@ -114,18 +114,18 @@ export const constantRoutes = [
       component: () => import('@/views/correct/index'),
       meta: { title: '转入审核', icon: 'audit' }
     },
-    {
-      path: 'manage',
-      name: 'Manage',
-      component: () => import('@/views/manage/index'),
-      meta: { title: '转入管理', icon: 'manage' }
-    },
-    {
-      path: 'trace',
-      name: 'Trace',
-      component: () => import('@/views/manage/index'),
-      meta: { title: '转出追踪', icon: 'trace' }
-    },
+    // {
+    //   path: 'manage',
+    //   name: 'Manage',
+    //   component: () => import('@/views/manage/index'),
+    //   meta: { title: '转入管理', icon: 'manage' }
+    // },
+    // {
+    //   path: 'trace',
+    //   name: 'Trace',
+    //   component: () => import('@/views/manage/index'),
+    //   meta: { title: '转出追踪', icon: 'trace' }
+    // },
     {
       path: 'auto',
       name: 'Auto',

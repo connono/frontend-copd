@@ -142,7 +142,8 @@
 											<el-input
 											  v-model="form.otherFailureReason"
 											  size="medium"
-											  placeholder="请输入其他类型"></el-input>
+											  placeholder="请输入其他类型"
+											  :disabled="form.followupType=='常规随访'||form.followupType=='预警干预'"></el-input>
 										</el-form-item>
 										<el-form-item label="失访原因">
 											<el-input
@@ -281,10 +282,10 @@
 	  form={
 		followupMethod: '',
 		status: '1',
-		followupType: '',
-		failureReason: '',
+		followupType: '常规随访',
+		failureReason: null,
 		death: false,
-		deathTime: '',
+		deathTime: null,
 		content: {
 			liveQuality: '良好',
 			physicalCondition: '良好',
@@ -296,7 +297,7 @@
 			newDiscomfort: null
 		},
 		otherFailureReason: '',
-		summary: ''
+		summary: null
 	  }
 	  selectedPatientID=''
 	  selectedAlertItems=[]
