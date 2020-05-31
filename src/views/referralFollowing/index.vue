@@ -129,8 +129,8 @@
 				<el-table-column
 				  prop="position"
 				  label="状态"
-				  width="100">-->
-				</el-table-column>
+				  width="100">
+				</el-table-column>-->
 				<el-table-column
 				  fixed="right"
 				  label="操作"

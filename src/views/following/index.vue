@@ -129,13 +129,13 @@
 				<el-table-column
 				  prop="position"
 				  label="状态"
-				  width="100">-->
-				</el-table-column>
+				  width="100">
+				</el-table-column>-->
 				<el-table-column
 				  fixed="right"
 				  label="操作"
 				  width="150">
-					<template slot-scope="scope">
+					<template slot-scope="scope" v-if="scope.row.manageStatus===0">
 						<div v-if="scope.row.status==0">
 							<el-button @click="openCreateFollowRecord(scope.row)" type="text" size="medium">立即随访</el-button>
 							<el-button @click="handleIgnore(scope.row.serialNo)" type="text" size="medium">忽略</el-button>

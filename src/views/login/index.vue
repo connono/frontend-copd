@@ -1,10 +1,10 @@
 <template>
   <el-container class="container">
     <el-header class="header">
-	  <span class="title">慢病管理工作平台</span>
-	</el-header>
+      <span class="title">慢病管理工作平台</span>
+    </el-header>
     <el-main class="content">
-	  <div class="login-container">
+      <div class="login-container">
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-width="20px">
 
           <div class="title-container">
@@ -49,11 +49,11 @@
           <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
 
         </el-form>
-	  </div>
+      </div>
     </el-main>
-	<el-footer class="footer">
-	  Copyright © 2019 浙江大学
-	</el-footer>
+    <el-footer class="footer">
+      Copyright © 2019 浙江大学
+    </el-footer>
   </el-container>
 </template>
 
@@ -64,7 +64,7 @@ import { getPatientList } from '../../api/user'
 export default {
   name: 'Login',
   data() {
-    /*const validateUsername = (rule, value, callback) => {
+    /* const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
         callback(new Error('请输入用户名'))
       } else {
@@ -111,43 +111,42 @@ export default {
         this.$refs.password.focus()
       })
     },
-	P_getList(func,data){
-		return new Promise((resolve, reject)=>{
-			func(data)
-			  .then(response=>{
-				resolve(response.data);
+    P_getList(func, data) {
+      return new Promise((resolve, reject) => {
+        func(data)
+			  .then(response => {
+            resolve(response.data)
 		      })
-		      .catch(err=>{
-				reject(err);
+		      .catch(err => {
+            reject(err)
 		      })
 		    })
-	},
+    },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-		  //console.log('submit')
+		  // console.log('submit')
 		  var that = this
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-		    var P_getList_1 = this.P_getList(getPatientList, {viewerID: this.$store.state.user.token, type: 1})
-		    var P_getList_2 = this.P_getList(getPatientList, {viewerID: this.$store.state.user.token, type: 2})
-		    var P_getList_3 = this.P_getList(getPatientList, {viewerID: this.$store.state.user.token, type: 3});
-			Promise.all([P_getList_1,P_getList_2,P_getList_3]).then((res)=>{
-				localStorage.setItem('patientList', JSON.stringify(res));
-				//console.log('login success')
-				this.loading = false
-				this.$router.push({ path: this.redirect || '/' })
-				
-			}).catch((err)=>{
+		    var P_getList_1 = this.P_getList(getPatientList, { viewerID: this.$store.state.user.token, type: 1 })
+		    var P_getList_2 = this.P_getList(getPatientList, { viewerID: this.$store.state.user.token, type: 2 })
+		    var P_getList_3 = this.P_getList(getPatientList, { viewerID: this.$store.state.user.token, type: 3 })
+            Promise.all([P_getList_1, P_getList_2, P_getList_3]).then((res) => {
+              localStorage.setItem('patientList', JSON.stringify(res))
+              // console.log('login success')
+              this.loading = false
+              this.$router.push({ path: this.redirect || '/' })
+            }).catch((err) => {
 			  this.loading = false
-			  //console.log(err);
-			})
+			  // console.log(err);
+            })
           }).catch((err) => {
             this.loading = false
-			//console.log('login fail',err)
+            // console.log('login fail',err)
           })
         } else {
-          //console.log('error submit!!')
+          // console.log('error submit!!')
           return false
         }
       })
@@ -224,7 +223,7 @@ $gray:#a9a9a9;
   }
   .content{
     position: relative;
-	
+
   }
   .footer{
     height: 40px;
@@ -243,7 +242,6 @@ $gray:#a9a9a9;
   background-color: gray;
   opacity: 0.9;
   border-radius: 20px;
-  
 
   .login-form {
     position: relative;

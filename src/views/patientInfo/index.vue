@@ -3,7 +3,7 @@
     <div>
 		<el-tabs v-model="activeName" @tab-click="handleClick">
 			<el-tab-pane label="基本信息" name="first">
-				<el-row style="margin-bottom:20px;">
+				<el-row style="margin-bottom:20px;" v-if="isOptional===true">
 					<el-button type="primary" icon="el-icon-edit" @click="centerDialogVisiblePlan = true">新建随访计划</el-button>
 					<el-button type="primary" @click="centerDialogVisibleRecord = true">随访</el-button>
 					<el-button v-if="information_form.manageStatus=='管理中'" type="primary" @click="centerDialogVisibleReferralOut = true">转出</el-button>
@@ -675,6 +675,8 @@
 		centerDialogVisibleReferralOut=false;
 		centerDialogVisibleReferralBack=false;
 
+		isOptional=false;
+
 		selectedDivison='';
 		divisionTree=[];
 		hospitalList=[];
@@ -1100,15 +1102,25 @@
 			  })
 		}
 		
+		judgeIsOptional(){
+			var allList = JSON.parse(localStorage.getItem('patientList'))
+			var optionalList = [].concat(allList[0],allList[2])
+			optionalList.forEach(element => {
+				if(element.patientID == this.$route.params.patientID) {
+					this.isOptional = true
+				}
+			})
+		}
+
 		mounted(){
-			
+			this.judgeIsOptional()
 			//console.log(this.$route.params.patientID);
 			this.getInformation()
-			this.getWarning();
-			this.getFollowing();
-			this.getReferral();
-			this.getData();
-			this.getDivisonTree();
+			this.getWarning()
+			this.getFollowing()
+			this.getReferral()
+			this.getData()
+			this.getDivisonTree()
 		}
 	}
 </script>

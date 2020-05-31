@@ -117,7 +117,7 @@
 								<span v-if="item.manageItem.lastFollowupDate!=null">{{"，上次随访："+toDateText(item.manageItem.lastFollowupDate.replace(/-/g,"/"))+getDaysText(-item.manageItem.lastFollowupDays)}}</span>
 								<!-- <span v-if="item.manageItem.followupDate!=null">{{"，计划随访："+toDateText(item.manageItem.followupDate.replace(/-/g,"/"))+getDaysText(item.manageItem.followupDays)}}</span> -->
 							</div>
-							<div class="btn">
+							<div class="btn" v-if="item.manageItem.manageStatus===0">
 								<el-button size="medium" type="primary" @click="openCreateFollowRecord(item.patientID,item.alertItemList)">立即干预</el-button>
 								<el-dialog
 								  title="新建随访记录"
