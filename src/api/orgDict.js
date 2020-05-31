@@ -15,3 +15,11 @@ export function fetchOrgList(data) {
     params: data
   })
 }
+
+export function getOrgName(data) {
+  return request({
+    url: 'http://localhost:18908/dict/org/name',
+    method: 'get',
+    params: data
+  })
+}

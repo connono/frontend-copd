@@ -3,7 +3,7 @@
     <div>
 		<el-tabs v-model="activeName" @tab-click="handleClick">
 			<el-tab-pane label="基本信息" name="first">
-				<el-row style="margin-bottom:20px;">
+				<el-row style="margin-bottom:20px;" v-if="isOptional===true">
 					<el-button type="primary" icon="el-icon-edit" @click="centerDialogVisiblePlan = true">新建随访计划</el-button>
 					<el-button type="primary" @click="centerDialogVisibleRecord = true">随访</el-button>
 					<el-button v-if="information_form.manageStatus=='管理中'" type="primary" @click="centerDialogVisibleReferralOut = true">转出</el-button>
@@ -234,17 +234,17 @@
 						</template>
 					</el-table-column>
 					<el-table-column
-						prop="followingType"
+						prop="followupType"
 						label="类型"
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="way"
+						prop="followupMethod"
 						label="方式"
 						width="180">
 					</el-table-column>
 					<el-table-column
-						prop="result"
+						prop="status"
 						label="结果"
 						width="180">
 					</el-table-column>
@@ -484,8 +484,8 @@
 			</el-form-item>
 			<el-form-item label="随访结果">
 				<el-radio v-model="formRecord.status" label="0">失访</el-radio>
-				<el-radio v-model="formRecord.status" label="1" @change="form.failureReason=''">进行中</el-radio>
-				<el-radio v-model="formRecord.status" label="2" @change="form.failureReason=''">有效</el-radio>
+				<el-radio v-model="formRecord.status" label="1" @change="form.failureReason=null">进行中</el-radio>
+				<el-radio v-model="formRecord.status" label="2" @change="form.failureReason=null">有效</el-radio>
 			</el-form-item>
 			<el-form-item label="随访类型">
 				<el-radio v-model="formRecord.followupType" label="常规随访">常规随访</el-radio>
@@ -612,7 +612,8 @@
 					  v-for="(hospital,index) in hospitalList"
 					  :key="index"
 					  :label="hospital.orgName"
-					  :value="hospital.orgCode">
+					  :value="hospital.orgCode"
+					  :disabled="hospital.orgCode==$store.state.user.orgCode">
 					</el-option>
 				</el-select>
 			</el-form-item>
@@ -674,23 +675,25 @@
 		centerDialogVisibleReferralOut=false;
 		centerDialogVisibleReferralBack=false;
 
+		isOptional=false;
+
 		selectedDivison='';
 		divisionTree=[];
 		hospitalList=[];
 		doctorList=[];
 
 		formPlan={
-		  memo: '',
+		  memo: null,
 		  followupType: '',
 		  planDate: ''
 		}
 		formRecord={
 		  followupMethod: '',
 		  status: '1',
-		  followupType: '',
-		  failureReason: '',
+		  followupType: '常规随访',
+		  failureReason: null,
 		  death: false,
-		  deathTime: '',
+		  deathTime: null,
 		  content: {
 			liveQuality: '良好',
 			physicalCondition: '良好',
@@ -702,10 +705,10 @@
 			newDiscomfort: null
 		  },
 		  otherFailureReason: '',
-		  summary: ''
+		  summary: null
 		}
 		formReferralOut={
-		  alertSerialNo: 0,
+		  alertSerialNo: null,
 		  doctorID: '',
 		  orgCode: '',
 		  referralPurpose: '',
@@ -713,7 +716,7 @@
 		  referralType: ''
 		}
 		formReferralBack={
-			receipt: ''
+			receipt: null
 		}
 		
 		warning_tableData=[];
@@ -878,8 +881,10 @@
 		getFollowing(){
 			getPatientFollowingInfo({patientID: this.$route.params.patientID, pageIndex: this.currentPageWarning, pageOffset: this.pageSizeWarning})
 			  .then(response=>{
-			    console.log(response)
 				this.following_tableData = response.data.content;
+				this.following_tableData.forEach(element=>{
+					element.status = this.$dict.followupRecordStatus[element.status]
+				})
 				this.followingCount = response.data.totalElements;
 			  })
 			  .catch(err=>{
@@ -1097,15 +1102,25 @@
 			  })
 		}
 		
+		judgeIsOptional(){
+			var allList = JSON.parse(localStorage.getItem('patientList'))
+			var optionalList = [].concat(allList[0],allList[2])
+			optionalList.forEach(element => {
+				if(element.patientID == this.$route.params.patientID) {
+					this.isOptional = true
+				}
+			})
+		}
+
 		mounted(){
-			
+			this.judgeIsOptional()
 			//console.log(this.$route.params.patientID);
 			this.getInformation()
-			this.getWarning();
-			this.getFollowing();
-			this.getReferral();
-			this.getData();
-			this.getDivisonTree();
+			this.getWarning()
+			this.getFollowing()
+			this.getReferral()
+			this.getData()
+			this.getDivisonTree()
 		}
 	}
 </script>

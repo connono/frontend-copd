@@ -5,7 +5,8 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
-      <div class="welcome-text">欢迎您</div>
+      <div v-if="auth==0" class="welcome-text">{{ orgName }}的{{ doctorName }}医生，欢迎您</div>
+      <div v-else class="welcome-text">{{ orgName }}的总管理员，欢迎您</div>
       <div>
         <el-dropdown class="avatar-container" trigger="click">
           <div class="avatar-wrapper">
@@ -38,17 +39,40 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { getDoctorName } from '../../api/doctorInfo'
+import { getOrgName } from '../../api/orgDict'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger
   },
+  data() {
+    return {
+      orgName: '',
+      doctorName: '',
+      auth: this.$store.state.user.auth
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar'
     ])
+  },
+  created() {
+    if (this.auth == 0) {
+      getDoctorName({ doctorID: this.$store.state.user.token }).then(res => {
+        this.doctorName = res.data
+      }).catch(err => {
+        this.err(err)
+      })
+    }
+    getOrgName({ orgCode: this.$store.state.user.orgCode }).then(res => {
+      this.orgName = res.data
+    }).catch(err => {
+      this.err(err)
+    })
   },
   methods: {
     toggleSideBar() {

@@ -5,11 +5,10 @@
 		<div style="display: inline-block; float: right">
 			<span>管理状态：</span>
 			<el-select v-model="selectedType" placeholder="全部" @change="handleSelect">
-				<el-option label="全部" value="0"></el-option>
-				<el-option label="管理中" value="1"></el-option>
-				<el-option label="转出" value="2"></el-option>
-				<el-option label="转入" value="3"></el-option>
-				</el-option>
+				<el-option label="全部" :value="0"></el-option>
+				<el-option label="管理中" :value="1"></el-option>
+				<el-option label="转出" :value="2"></el-option>
+				<el-option label="转入" :value="3"></el-option>
 			</el-select>
 		</div>
 	</div>
@@ -17,8 +16,7 @@
 	  :data="tableData"
 	  stripe
 	  cell-style="font-size:16px; text-align: center;"
-	  header-cell-style="font-size: 18px; text-align: center;"
-	>
+	  header-cell-style="font-size: 18px; text-align: center;">
 	  <el-table-column
 	    fixed
 		prop="patientID"
@@ -94,7 +92,7 @@
 		:page-sizes="[15,30,45,60]"
 		:page-size="pageSize"
 		layout="total, sizes, prev, pager, next, jumper"
-		:total="patientCount">
+		:total="totalElements">
 	</el-pagination>
   </div>
 </template>
@@ -120,7 +118,8 @@
 		  referralInCount: 0,
 		};
 		pageSize = 15;
-		selectedType='';
+		selectedType=0;
+		totalElements=0;
 		
 		handleSizeChange(val){
 			this.pageSize = val;
@@ -141,6 +140,7 @@
 			getPatientList({orgCode: this.$store.state.user.orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: this.selectedType})
 			  .then(response=>{
 				this.tableData = response.data.content;
+				this.totalElements = response.data.totalElements;
 				console.log(this.tableData);
 			  })
 			  .catch(err=>{
@@ -161,6 +161,7 @@
 				getPatientList({orgCode: this.$store.state.user.orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: this.selectedType})
 				  .then(response=>{
 					this.tableData = response.data.content;
+					this.totalElements = response.data.totalElements;
 					console.log(this.tableData);
 			      })
 				  .catch(err=>{
@@ -178,6 +179,7 @@
 				getPatientList({orgCode: this.$store.state.user.orgCode, pageIndex: this.currentPage, pageOffset: this.pageSize, type: 0})
 				  .then(response=>{
 					this.tableData = response.data.content;
+					this.totalElements = response.data.totalElements;
 					console.log(this.tableData);
 			      })
 				  .catch(err=>{
